@@ -1,0 +1,17 @@
+@import "tailwindcss";
+/* 全家桶统一浅色渐变背景 + 字体 + 动画原语，单一事实源在 @oceanleo/ui 的
+   theme/globals.css。站内不再自画背景/字体/动画。 */
+@import "@oceanleo/ui/theme/globals.css";
+
+/* bizdev — 仅保留本站 accent token（外贸蓝绿：#0e7490 → #0284c7 渐变）。
+   背景 / 字体 / 动画走共享包。 */
+:root {
+  --accent: #0e7490;
+  --accent-soft: #cffafe;
+  --grad-from: #0e7490;
+  --grad-to: #0284c7;
+}
+
+@theme inline {
+  --color-accent: var(--accent);
+}
