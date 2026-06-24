@@ -4,20 +4,11 @@ import { ReactNode, useEffect, useState } from "react";
 import { AppShell, workspaceNav } from "@/components/AppShell";
 import { useIsEmbed } from "@oceanleo/ui/lib";
 import {
-  ConsoleFnSubNav,
   LibrarySubNav,
   HistorySubNav,
-  type ConsoleFnItem,
 } from "@oceanleo/ui/shell";
 import { useUser } from "@/lib/useUser";
 import { getCredits, signOutEverywhere } from "@/lib/oceanleo-auth";
-import {
-  IconReply,
-  IconResearch,
-  IconCompetition,
-  IconLetter,
-  IconTranslate,
-} from "@/components/console/icons";
 
 // LeoBizDev（外贸出海 AI 工作台）品牌色：青蓝 #0e7490（来自 globals.css --accent）。
 const ACCENT = "#0e7490";
@@ -32,15 +23,6 @@ function BrandLogo() {
   );
 }
 
-// doctrine v4：工作台功能区（与 console/ConsoleClient.tsx 的 functions 1:1），列到侧栏子栏。
-const WORKSPACE_FNS: ConsoleFnItem[] = [
-  { id: "reply", label: "智能回复", icon: <IconReply />, agentId: "bizdev.reply" },
-  { id: "research", label: "公司调研", icon: <IconResearch />, agentId: "bizdev.research" },
-  { id: "competition", label: "竞品分析", icon: <IconCompetition />, agentId: "bizdev.competition" },
-  { id: "dev-letter", label: "开发信", icon: <IconLetter />, agentId: "bizdev.dev-letter" },
-  { id: "trade-talk", label: "外贸翻译", icon: <IconTranslate />, agentId: "bizdev.trade-talk" },
-];
-
 // 文件库四分区在侧栏，主区受控 FileLibrary（跨站分区与 library 页一致）。
 const LIBRARY_SITES = [
   { id: "chat", label: "LeoChat" },
@@ -48,10 +30,11 @@ const LIBRARY_SITES = [
   { id: "word", label: "LeoDoc" },
 ];
 
-// 2026-06-19 宗旨 + doctrine v4：侧边栏 + 四页（首页 / 工作台 / 文件库 / 历史记录）。
+// 2026-06-19 宗旨 + doctrine v7：侧边栏 + 四页（首页 / 工作台 / 文件库 / 历史记录）。
+// 工作台**不再**在侧栏列功能区（具体 app）——功能选择搬到主区目录页（OperatorConsole
+// directory 模式），打开后右上角「返回」回目录。文件库 / 历史记录仍保留覆盖式左栏子栏。
 const NAV = workspaceNav({
   subNav: {
-    workspace: { title: "工作台", render: () => <ConsoleFnSubNav functions={WORKSPACE_FNS} accent={ACCENT} /> },
     library: { title: "文件库", render: () => <LibrarySubNav accent={ACCENT} /> },
     history: { title: "历史记录", render: () => <HistorySubNav siteId={SITE_ID} accent={ACCENT} /> },
   },

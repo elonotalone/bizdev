@@ -115,6 +115,8 @@ export default function ConsoleClient() {
         id: "reply",
         label: "智能回复",
         icon: <IconReply />,
+        tagline: "客户邮件 / 询盘智能回复",
+        capabilities: "读懂客户邮件、询盘，生成得体的多语种回复草稿。",
         agentId: "bizdev.reply",
         ops: wrap("bizdev.reply", reply.schema, reply.ops, reply.getState, reply.applyPatch),
         canvas: reply.canvas,
@@ -123,6 +125,8 @@ export default function ConsoleClient() {
         id: "research",
         label: "公司调研",
         icon: <IconResearch />,
+        tagline: "目标客户公司背景调研",
+        capabilities: "调研目标客户公司背景、规模、采购偏好与联系人。",
         agentId: "bizdev.research",
         ops: wrap("bizdev.research", research.schema, research.ops, research.getState, research.applyPatch),
         canvas: research.canvas,
@@ -131,6 +135,8 @@ export default function ConsoleClient() {
         id: "competition",
         label: "竞品分析",
         icon: <IconCompetition />,
+        tagline: "竞品对比 · 差异化卖点",
+        capabilities: "对比竞品价格 / 卖点，输出差异化策略与话术。",
         agentId: "bizdev.competition",
         ops: wrap("bizdev.competition", competition.schema, competition.ops, competition.getState, competition.applyPatch),
         canvas: competition.canvas,
@@ -139,6 +145,8 @@ export default function ConsoleClient() {
         id: "dev-letter",
         label: "开发信",
         icon: <IconLetter />,
+        tagline: "高回复率开发信撰写",
+        capabilities: "按客户与产品生成高回复率的多语种开发信。",
         agentId: "bizdev.dev-letter",
         ops: wrap("bizdev.dev-letter", devLetter.schema, devLetter.ops, devLetter.getState, devLetter.applyPatch),
         canvas: devLetter.canvas,
@@ -147,6 +155,8 @@ export default function ConsoleClient() {
         id: "trade-talk",
         label: "外贸翻译",
         icon: <IconTranslate />,
+        tagline: "外贸场景专业翻译",
+        capabilities: "外贸邮件 / 合同 / 术语的专业双向翻译与润色。",
         agentId: "bizdev.trade-talk",
         ops: wrap("bizdev.trade-talk", tradeTalk.schema, tradeTalk.ops, tradeTalk.getState, tradeTalk.applyPatch),
         canvas: tradeTalk.canvas,
@@ -164,6 +174,10 @@ export default function ConsoleClient() {
         accent={ACCENT}
         opsWidth={460}
         hideTabs={solo || !embed}
+        directory={!embed}
+        directoryTitle="LeoBizDev 工作台"
+        directorySubtitle="选一个功能开始——点开后右上角可「返回」切换。"
+        siteId={SITE_ID}
       />
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
     </>
