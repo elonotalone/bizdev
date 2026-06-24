@@ -173,7 +173,7 @@ export default function ConsoleClient() {
         onChange={selectFn}
         accent={ACCENT}
         opsWidth={460}
-        hideTabs={solo || !embed}
+        hideTabs={solo || embed}
         directory={!embed}
         directoryTitle="LeoBizDev 工作台"
         directorySubtitle="选一个功能开始——点开后右上角可「返回」切换。"
