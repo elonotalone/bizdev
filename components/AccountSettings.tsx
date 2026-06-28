@@ -127,7 +127,7 @@ export function AccountSettings() {
         <section className="v-fade-up" style={{ animationDelay: "120ms" }}>
           <h2 className="mb-1 text-[14px] font-semibold text-neutral-900">用量记录</h2>
           <p className="mb-3 text-[12px] text-neutral-500">
-            每一次调用的真实计费：输入 token / 输出 token / 模型 / 本次成本价（人民币，已含服务运维费，按实际用量精确到 ¥0.00001）。
+            每一次调用的真实计费：输入 token / 输出 token / 模型 / 本次成本价（人民币，OceanLeo 不加价，按实际用量精确到 ¥0.00001）。
           </p>
           {history.length === 0 ? (
             <div className="rounded-xl border border-dashed border-neutral-300 p-6 text-center">
@@ -153,7 +153,7 @@ export function AccountSettings() {
                     const totalTokens = metaNum(ev, "tokens");
                     const model = eventModel(ev);
                     const yuan = Number(ev?.amount_yuan ?? 0);
-                    // 这一次调用的真实成本价（人民币，已含服务费）。usage 事件按
+                    // 这一次调用的真实成本价（人民币，OceanLeo 不加价）。usage 事件按
                     // millifen 精确计费，meta.price_cny 是本次调用的真实花费；
                     // amount_yuan 只是钱包按整分滚动扣减的那一部分，可能为 0。
                     const isUsage = ev?.kind === "usage";
