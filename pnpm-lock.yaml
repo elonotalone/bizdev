@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@oceanleo/ui':
-        specifier: git+https://github.com/elonotalone/oceanleo-ui.git#v0.57.0
-        version: https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/a9d9743facde4007a01e236e0b056ee96c5792b6(@supabase/ssr@0.10.3(@supabase/supabase-js@2.108.2))(@supabase/supabase-js@2.108.2)(next-intl@4.13.0(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: git+https://github.com/elonotalone/oceanleo-ui.git#v0.59.0
+        version: https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/20aea29947e836399e461954a29e3b3c7302019f(@supabase/ssr@0.10.3(@supabase/supabase-js@2.108.2))(@supabase/supabase-js@2.108.2)(next-intl@4.13.0(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@supabase/ssr':
         specifier: ^0.10.3
         version: 0.10.3(@supabase/supabase-js@2.108.2)
@@ -456,9 +456,9 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
-  '@oceanleo/ui@https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/a9d9743facde4007a01e236e0b056ee96c5792b6':
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/a9d9743facde4007a01e236e0b056ee96c5792b6}
-    version: 0.57.0
+  '@oceanleo/ui@https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/20aea29947e836399e461954a29e3b3c7302019f':
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/20aea29947e836399e461954a29e3b3c7302019f}
+    version: 0.59.0
     peerDependencies:
       '@supabase/ssr': '>=0.5.0'
       '@supabase/supabase-js': '>=2.45.0'
@@ -2646,7 +2646,7 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@oceanleo/ui@https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/a9d9743facde4007a01e236e0b056ee96c5792b6(@supabase/ssr@0.10.3(@supabase/supabase-js@2.108.2))(@supabase/supabase-js@2.108.2)(next-intl@4.13.0(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@oceanleo/ui@https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/20aea29947e836399e461954a29e3b3c7302019f(@supabase/ssr@0.10.3(@supabase/supabase-js@2.108.2))(@supabase/supabase-js@2.108.2)(next-intl@4.13.0(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@supabase/ssr': 0.10.3(@supabase/supabase-js@2.108.2)
       '@supabase/supabase-js': 2.108.2
