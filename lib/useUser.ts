@@ -19,9 +19,9 @@ export function useUser() {
         clearTimeout(t);
       };
     }
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getSession().then(({ data }) => {
       if (mounted) {
-        setUser(data.user ?? null);
+        setUser(data.session?.user ?? null);
         setLoading(false);
       }
     });

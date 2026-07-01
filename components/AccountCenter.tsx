@@ -34,6 +34,12 @@ import {
 
 const MENU_ITEMS = [
   {
+    label: "通用",
+    href: "/general",
+    desc: "语言与主题（浅色 / 深色 / 自动）等外观设置",
+    external: false,
+  },
+  {
     label: "我的数据库",
     href: "/database",
     desc: "你在全 OceanLeo 系列产出的作品、上传的素材与知识库（跨站共享）",
@@ -89,8 +95,13 @@ export function AccountCenter() {
       setChecked(true);
       return;
     }
-    c.auth.getUser().then(({ data }) => {
-      setUser(data.user ?? null);
+    // SSO 修复（2026-07-01）：用 getSession() 读本地共享 cookie 里的会话，而不是
+    // getUser()。getUser() 会向 Supabase Auth 服务器发网络请求校验 access_token，
+    // 在跨子域 SSO 场景下（token 刚打开页面尚未刷新 / access_token 已过期而 refresh
+    // 尚未完成）会返回 null → 明明登录了却显示「尚未登录」。getSession() 会先本地
+    // 用 refresh_token 续期再返回，只要共享 cookie 在就稳定拿到会话（与主站一致）。
+    c.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
       setChecked(true);
     });
     const { data: sub } = c.auth.onAuthStateChange((_e, s) =>
