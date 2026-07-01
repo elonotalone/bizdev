@@ -1,12 +1,14 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { AppShell, workspaceNav } from "@/components/AppShell";
 import { useIsEmbed } from "@oceanleo/ui/lib";
 import {
   LibrarySubNav,
   HistorySubNav,
+  useWorkspaceNavLabels,
 } from "@oceanleo/ui/shell";
+import { useT } from "@oceanleo/ui/i18n";
 import { useUser } from "@/lib/useUser";
 import { getCredits, signOutEverywhere } from "@/lib/oceanleo-auth";
 
@@ -33,16 +35,22 @@ const LIBRARY_SITES = [
 // 2026-06-19 宗旨 + doctrine v7：侧边栏 + 四页（首页 / 工作台 / 文件库 / 历史记录）。
 // 工作台**不再**在侧栏列功能区（具体 app）——功能选择搬到主区目录页（OperatorConsole
 // directory 模式），打开后右上角「返回」回目录。文件库 / 历史记录仍保留覆盖式左栏子栏。
-const NAV = workspaceNav({
-  subNav: {
-    library: { title: "文件库", render: () => <LibrarySubNav accent={ACCENT} /> },
-    history: { title: "历史记录", render: () => <HistorySubNav siteId={SITE_ID} accent={ACCENT} /> },
-  },
-});
-
 export function SiteShell({ children }: { children: ReactNode }) {
   const { user } = useUser();
   const [credits, setCredits] = useState<number | null>(null);
+  const navLabels = useWorkspaceNavLabels();
+  const tNav = useT("nav");
+  const NAV = useMemo(
+    () =>
+      workspaceNav({
+        labels: navLabels,
+        subNav: {
+          library: { title: tNav("library"), render: () => <LibrarySubNav accent={ACCENT} /> },
+          history: { title: tNav("history"), render: () => <HistorySubNav siteId={SITE_ID} accent={ACCENT} /> },
+        },
+      }),
+    [navLabels, tNav],
+  );
   // ?embed=1 时（主站工作台 iframe 内嵌）隐藏本站外壳，只渲染内容。
   const embed = useIsEmbed();
 
