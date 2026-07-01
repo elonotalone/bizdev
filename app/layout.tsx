@@ -3,7 +3,13 @@ import "./globals.css";
 import "@oceanleo/ui/theme/ui.css";
 import { LeoAssistant, EmbedChrome } from "@oceanleo/ui/shell";
 import { SiteShell } from "@/components/SiteShell";
+import { I18nProvider } from "@oceanleo/ui/i18n";
+import { getLocale, normalizeLocale, htmlLang, localeDir } from "@oceanleo/ui/i18n/server";
+import { ThemeScript, ThemeProvider } from "@oceanleo/ui/theme";
+import { getThemeClass } from "@oceanleo/ui/theme/server";
 
+
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "LeoBizDev — 外贸 · 出海 AI 工作台 | bizdev.oceanleo.com",
   description:
@@ -17,15 +23,25 @@ export const viewport: Viewport = {
   themeColor: "#fafaf9",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const locale = normalizeLocale(await getLocale());
+  const { htmlClass } = await getThemeClass();
+
   return (
-    <html lang="zh-CN">
+    <html lang={htmlLang(locale)} dir={localeDir(locale)} className={htmlClass} suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
       <body className="antialiased">
+        <ThemeProvider>
+          <I18nProvider locale={locale}>
         <EmbedChrome />
         <SiteShell>{children}</SiteShell>
         <LeoAssistant siteId="bizdev" docType="doc" />
+                </I18nProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

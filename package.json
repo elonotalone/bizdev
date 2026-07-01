@@ -9,12 +9,13 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@oceanleo/ui": "github:elonotalone/oceanleo-ui#v0.61.0",
+    "@oceanleo/ui": "github:elonotalone/oceanleo-ui#v0.63.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.2",
     "next": "16.2.6",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "next-intl": "^4.13.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

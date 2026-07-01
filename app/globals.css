@@ -1,4 +1,7 @@
 @import "tailwindcss";
+
+/* 全家桶统一主题：class 策略 dark（配合 <html class="dark">，支持 Light/Dark/Auto）。 */
+@custom-variant dark (&:where(.dark, .dark *));
 /* 全家桶统一浅色渐变背景 + 字体 + 动画原语，单一事实源在 @oceanleo/ui 的
    theme/globals.css。站内不再自画背景/字体/动画。 */
 @import "@oceanleo/ui/theme/globals.css";
