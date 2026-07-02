@@ -40,15 +40,15 @@ const MENU_ITEMS = [
     external: false,
   },
   {
-    label: "我的数据库",
-    href: "/database",
-    desc: "你在全 OceanLeo 系列产出的作品、上传的素材与知识库（跨站共享）",
-    external: false,
-  },
-  {
     label: "API",
     href: "/api",
     desc: "选择模型、查看价格与 token 余额",
+    external: false,
+  },
+  {
+    label: "Cost",
+    href: "/cost",
+    desc: "用量柱状图与每次调用的真实计费记录",
     external: false,
   },
   {
