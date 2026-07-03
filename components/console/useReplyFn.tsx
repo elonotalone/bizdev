@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { StudioSection, ResultCanvas, CanvasEmpty, Markdown, type CanvasTab } from "@oceanleo/ui/shell";
 import type { OpsPatch, OpsSchema } from "@oceanleo/ui/lib";
+import { useUI } from "@oceanleo/ui/i18n";
 import { aiChat, AiError } from "@/lib/ai";
 import { useUser } from "@/lib/useUser";
 
@@ -28,6 +29,7 @@ export function useReplyFn(onNeedAuth: () => void): {
   getState: () => Record<string, unknown>;
   applyPatch: (patch: OpsPatch) => void;
 } {
+  const tt = useUI();
   const { user } = useUser();
   const [open, setOpen] = useState<"customer" | "idea" | "tone" | null>("customer");
   const toggle = (s: "customer" | "idea" | "tone") =>
@@ -55,7 +57,7 @@ export function useReplyFn(onNeedAuth: () => void): {
   const genUnderstanding = async () => {
     setError(null);
     if (!customerMsg.trim()) {
-      setError("请先粘贴客户的问题或消息。");
+      setError(tt("请先粘贴客户的问题或消息。"));
       return;
     }
     if (!user) return onNeedAuth();
@@ -78,7 +80,7 @@ export function useReplyFn(onNeedAuth: () => void): {
       setActiveTab("understanding");
     } catch (e) {
       if (e instanceof AiError && e.status === 401) onNeedAuth();
-      else setError(e instanceof Error ? e.message : "生成失败，请重试。");
+      else setError(e instanceof Error ? e.message : tt("生成失败，请重试。"));
     } finally {
       setBusy(false);
       setBusyKind(null);
@@ -88,7 +90,7 @@ export function useReplyFn(onNeedAuth: () => void): {
   const genReply = async () => {
     setError(null);
     if (!customerMsg.trim() && !answerIdea.trim()) {
-      setError("请至少粘贴客户消息或填写你的回答思路。");
+      setError(tt("请至少粘贴客户消息或填写你的回答思路。"));
       return;
     }
     if (!user) return onNeedAuth();
@@ -115,7 +117,7 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
       setActiveTab("reply");
     } catch (e) {
       if (e instanceof AiError && e.status === 401) onNeedAuth();
-      else setError(e instanceof Error ? e.message : "生成失败，请重试。");
+      else setError(e instanceof Error ? e.message : tt("生成失败，请重试。"));
     } finally {
       setBusy(false);
       setBusyKind(null);
@@ -125,11 +127,11 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
   const refineReply = async () => {
     setError(null);
     if (!reply.trim()) {
-      setError("请先生成一版回复，再进行优化。");
+      setError(tt("请先生成一版回复，再进行优化。"));
       return;
     }
     if (!refine.trim()) {
-      setError("请填写你的修改建议。");
+      setError(tt("请填写你的修改建议。"));
       return;
     }
     if (!user) return onNeedAuth();
@@ -150,7 +152,7 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
       setActiveTab("reply");
     } catch (e) {
       if (e instanceof AiError && e.status === 401) onNeedAuth();
-      else setError(e instanceof Error ? e.message : "优化失败，请重试。");
+      else setError(e instanceof Error ? e.message : tt("优化失败，请重试。"));
     } finally {
       setBusy(false);
       setBusyKind(null);
@@ -163,7 +165,7 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      setError("复制失败，请手动选择文本复制。");
+      setError(tt("复制失败，请手动选择文本复制。"));
     }
   };
 
@@ -171,15 +173,15 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
     <div className="space-y-3">
       <StudioSection
         index={1}
-        title="客户消息"
+        title={tt("客户消息")}
         accent={ACCENT}
         open={open === "customer"}
         onToggle={() => toggle("customer")}
-        summary={customerMsg ? "已填写" : "粘贴客户邮件/WhatsApp"}
+        summary={customerMsg ? tt("已填写") : tt("粘贴客户邮件/WhatsApp")}
       >
         <textarea
           className={`${inputCls} min-h-32 resize-y`}
-          placeholder="粘贴客户提出的问题/邮件/WhatsApp 消息…"
+          placeholder={tt("粘贴客户提出的问题/邮件/WhatsApp 消息…")}
           value={customerMsg}
           onChange={(e) => setCustomerMsg(e.target.value)}
         />
@@ -189,21 +191,21 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
           disabled={busy || !customerMsg.trim()}
           className="mt-2 rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-1.5 text-xs font-medium text-cyan-700 transition hover:bg-cyan-100 disabled:opacity-50"
         >
-          {busyKind === "understanding" ? "生成中…" : "AI 生成「理解与对策」"}
+          {busyKind === "understanding" ? tt("生成中…") : tt("AI 生成「理解与对策」")}
         </button>
       </StudioSection>
 
       <StudioSection
         index={2}
-        title="我的思路（可选）"
+        title={tt("我的思路（可选）")}
         accent={ACCENT}
         open={open === "idea"}
         onToggle={() => toggle("idea")}
-        summary={answerIdea ? "已填写" : "可选"}
+        summary={answerIdea ? tt("已填写") : tt("可选")}
       >
         <textarea
           className={`${inputCls} min-h-24 resize-y`}
-          placeholder="你想表达的要点 / 报价 / 交期 / 条件等（可选）"
+          placeholder={tt("你想表达的要点 / 报价 / 交期 / 条件等（可选）")}
           value={answerIdea}
           onChange={(e) => setAnswerIdea(e.target.value)}
         />
@@ -211,11 +213,11 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
 
       <StudioSection
         index={3}
-        title="角色与渠道"
+        title={tt("角色与渠道")}
         accent={ACCENT}
         open={open === "tone"}
         onToggle={() => toggle("tone")}
-        summary={`${role.split("：")[0]} · ${replyType === "email" ? "邮件" : "WhatsApp"}`}
+        summary={`${tt(role.split("：")[0])} · ${replyType === "email" ? tt("邮件") : "WhatsApp"}`}
       >
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2">
@@ -231,7 +233,7 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
                     : "border border-stone-300 text-stone-600 hover:bg-stone-50"
                 }`}
               >
-                {r.split("：")[0]}
+                {tt(r.split("：")[0])}
               </button>
             ))}
           </div>
@@ -247,7 +249,7 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
                     : "border-stone-300 text-stone-600 hover:bg-stone-50"
                 }`}
               >
-                {t === "email" ? "📧 邮件回复" : "💬 WhatsApp 短回复"}
+                {t === "email" ? tt("📧 邮件回复") : tt("💬 WhatsApp 短回复")}
               </button>
             ))}
           </div>
@@ -266,7 +268,7 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
         className="w-full rounded-2xl px-4 py-3 text-sm font-bold text-white shadow-md transition hover:opacity-90 disabled:opacity-50"
         style={{ background: "linear-gradient(135deg, var(--grad-from), var(--grad-to))" }}
       >
-        {busyKind === "reply" ? "AI 撰写中…" : "生成客户回复 ✦"}
+        {busyKind === "reply" ? tt("AI 撰写中…") : tt("生成客户回复 ✦")}
       </button>
     </div>
   );
@@ -274,25 +276,25 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
   const tabs: CanvasTab[] = [
     {
       id: "reply",
-      label: "客户回复",
+      label: tt("客户回复"),
       content: (
         <div className="flex h-full flex-col">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-bold text-stone-800">生成结果（可编辑）</h2>
+            <h2 className="text-sm font-bold text-stone-800">{tt("生成结果（可编辑）")}</h2>
             <button
               type="button"
               onClick={() => void copy()}
               disabled={!reply}
               className="rounded-full border border-stone-300 px-3.5 py-1 text-xs font-medium text-stone-600 transition hover:bg-stone-50 disabled:opacity-40"
             >
-              {copied ? "已复制 ✓" : "复制全文"}
+              {copied ? tt("已复制 ✓") : tt("复制全文")}
             </button>
           </div>
           {busyKind === "reply" && !reply ? (
             <div className="grid flex-1 place-items-center py-16">
               <div className="text-center">
                 <div className="mx-auto h-8 w-8 animate-spin rounded-full border-[3px] border-cyan-200 border-t-cyan-600" />
-                <p className="mt-3 text-xs text-stone-400">正在撰写专业回复…</p>
+                <p className="mt-3 text-xs text-stone-400">{tt("正在撰写专业回复…")}</p>
               </div>
             </div>
           ) : reply ? (
@@ -303,10 +305,10 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
                 onChange={(e) => setReply(e.target.value)}
               />
               <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3">
-                <div className="mb-2 text-xs font-semibold text-amber-800">🔄 继续优化</div>
+                <div className="mb-2 text-xs font-semibold text-amber-800">{tt("🔄 继续优化")}</div>
                 <textarea
                   className={`${inputCls} min-h-16 resize-y`}
-                  placeholder="例如：语气更友好 / 增加技术细节 / 更简短 / 更正式…"
+                  placeholder={tt("例如：语气更友好 / 增加技术细节 / 更简短 / 更正式…")}
                   value={refine}
                   onChange={(e) => setRefine(e.target.value)}
                 />
@@ -316,14 +318,14 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
                   disabled={busy || !refine.trim()}
                   className="mt-2 rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-amber-700 disabled:opacity-50"
                 >
-                  {busyKind === "refine" ? "重新生成中…" : "按建议重写"}
+                  {busyKind === "refine" ? tt("重新生成中…") : tt("按建议重写")}
                 </button>
               </div>
             </div>
           ) : (
             <CanvasEmpty
-              title="客户回复会显示在这里"
-              hint="粘贴客户消息、选好角色与渠道，点「生成客户回复」后即可在此编辑、复制。"
+              title={tt("客户回复会显示在这里")}
+              hint={tt("粘贴客户消息、选好角色与渠道，点「生成客户回复」后即可在此编辑、复制。")}
             />
           )}
         </div>
@@ -331,10 +333,10 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
     },
     {
       id: "understanding",
-      label: "理解与对策",
+      label: tt("理解与对策"),
       content: (
         <div className="flex h-full flex-col">
-          <h2 className="mb-3 text-sm font-bold text-stone-800">理解与对策</h2>
+          <h2 className="mb-3 text-sm font-bold text-stone-800">{tt("理解与对策")}</h2>
           {busyKind === "understanding" && !understanding ? (
             <div className="grid flex-1 place-items-center py-16">
               <div className="mx-auto h-8 w-8 animate-spin rounded-full border-[3px] border-cyan-200 border-t-cyan-600" />
@@ -345,8 +347,8 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
             </div>
           ) : (
             <CanvasEmpty
-              title="客户意图分析会显示在这里"
-              hint="在「客户消息」里点「AI 生成理解与对策」，先读懂客户，再生成回复。"
+              title={tt("客户意图分析会显示在这里")}
+              hint={tt("在「客户消息」里点「AI 生成理解与对策」，先读懂客户，再生成回复。")}
             />
           )}
         </div>
@@ -358,23 +360,23 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
 
   const schema: OpsSchema = {
     agentId: "bizdev.reply",
-    title: "智能回复",
+    title: tt("智能回复"),
     fields: [
-      { key: "customerMsg", label: "客户消息", type: "longtext", hint: "客户的邮件/WhatsApp/询盘原文" },
-      { key: "answerIdea", label: "我的思路", type: "longtext" },
+      { key: "customerMsg", label: tt("客户消息"), type: "longtext", hint: tt("客户的邮件/WhatsApp/询盘原文") },
+      { key: "answerIdea", label: tt("我的思路"), type: "longtext" },
       {
-        key: "role", label: "角色与语气", type: "enum",
-        enumValues: ROLE_PRESETS.map((r) => ({ value: r, label: r.split("：")[0] })),
+        key: "role", label: tt("角色与语气"), type: "enum",
+        enumValues: ROLE_PRESETS.map((r) => ({ value: r, label: tt(r.split("：")[0]) })),
       },
       {
-        key: "replyType", label: "渠道", type: "enum",
+        key: "replyType", label: tt("渠道"), type: "enum",
         enumValues: [
-          { value: "email", label: "邮件" },
+          { value: "email", label: tt("邮件") },
           { value: "whatsapp", label: "WhatsApp" },
         ],
       },
-      { key: "understanding", label: "理解与对策", type: "longtext" },
-      { key: "reply", label: "回复正文", type: "longtext" },
+      { key: "understanding", label: tt("理解与对策"), type: "longtext" },
+      { key: "reply", label: tt("回复正文"), type: "longtext" },
     ],
     actions: [],
   };

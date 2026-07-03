@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { StudioSection, ResultCanvas, CanvasEmpty, type CanvasTab } from "@oceanleo/ui/shell";
 import type { OpsPatch, OpsSchema } from "@oceanleo/ui/lib";
+import { useUI } from "@oceanleo/ui/i18n";
 import { aiChat, AiError } from "@/lib/ai";
 import { useUser } from "@/lib/useUser";
 
@@ -22,6 +23,7 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
   getState: () => Record<string, unknown>;
   applyPatch: (patch: OpsPatch) => void;
 } {
+  const tt = useUI();
   const { user } = useUser();
   const [open, setOpen] = useState<"text" | "opts" | null>("text");
   const toggle = (s: "text" | "opts") => setOpen((cur) => (cur === s ? null : s));
@@ -78,7 +80,7 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
     <div className="space-y-3">
       <StudioSection
         index={1}
-        title="原文"
+        title={tt("原文")}
         accent={ACCENT}
         open={open === "text"}
         onToggle={() => toggle("text")}
@@ -86,7 +88,7 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
       >
         <textarea
           className={`${inputCls} min-h-40 resize-y`}
-          placeholder="粘贴要翻译的外贸文本（邮件/产品描述/合同条款/话术…）"
+          placeholder={tt("粘贴要翻译的外贸文本（邮件/产品描述/合同条款/话术…）")}
           value={source}
           onChange={(e) => setSource(e.target.value)}
         />
@@ -94,7 +96,7 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
 
       <StudioSection
         index={2}
-        title="目标语言与选项"
+        title={tt("目标语言与选项")}
         accent={ACCENT}
         open={open === "opts"}
         onToggle={() => toggle("opts")}
@@ -102,7 +104,7 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
       >
         <div className="space-y-3">
           <div>
-            <div className="mb-1.5 text-xs font-medium text-stone-500">目标语言</div>
+            <div className="mb-1.5 text-xs font-medium text-stone-500">{tt("目标语言")}</div>
             <div className="flex flex-wrap gap-2">
               {LANGS.map((l) => (
                 <button
@@ -121,7 +123,7 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
             </div>
           </div>
           <div>
-            <div className="mb-1.5 text-xs font-medium text-stone-500">语气</div>
+            <div className="mb-1.5 text-xs font-medium text-stone-500">{tt("语气")}</div>
             <div className="flex flex-wrap gap-2">
               {TONES.map((t) => (
                 <button
@@ -141,7 +143,7 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
           </div>
           <textarea
             className={`${inputCls} min-h-16 resize-y`}
-            placeholder="术语对照（可选，每行一条，如：储能=energy storage）"
+            placeholder={tt("术语对照（可选，每行一条，如：储能=energy storage）")}
             value={terms}
             onChange={(e) => setTerms(e.target.value)}
           />
@@ -172,7 +174,7 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
       content: (
         <div className="flex h-full flex-col">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-bold text-stone-800">译文（可编辑）</h2>
+            <h2 className="text-sm font-bold text-stone-800">{tt("译文（可编辑）")}</h2>
             <button
               type="button"
               onClick={() => void copy()}
@@ -197,8 +199,8 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
             />
           ) : (
             <CanvasEmpty
-              title="译文会显示在这里"
-              hint="粘贴原文、选好目标语言与语气，点「翻译」后即可在此编辑、复制。"
+              title={tt("译文会显示在这里")}
+              hint={tt("粘贴原文、选好目标语言与语气，点「翻译」后即可在此编辑、复制。")}
             />
           )}
         </div>

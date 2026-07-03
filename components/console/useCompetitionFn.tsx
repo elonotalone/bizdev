@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { StudioSection, ResultCanvas, CanvasEmpty, Markdown, type CanvasTab } from "@oceanleo/ui/shell";
 import type { OpsPatch, OpsSchema } from "@oceanleo/ui/lib";
+import { useUI } from "@oceanleo/ui/i18n";
 import { aiChat, AiError } from "@/lib/ai";
 import { useUser } from "@/lib/useUser";
 
@@ -22,6 +23,7 @@ export function useCompetitionFn(onNeedAuth: () => void): {
   getState: () => Record<string, unknown>;
   applyPatch: (patch: OpsPatch) => void;
 } {
+  const tt = useUI();
   const { user } = useUser();
   const [open, setOpen] = useState<"mine" | "rivals" | "dim" | null>("mine");
   const toggle = (s: "mine" | "rivals" | "dim") =>
@@ -88,7 +90,7 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
     <div className="space-y-3">
       <StudioSection
         index={1}
-        title="自家产品"
+        title={tt("自家产品")}
         accent={ACCENT}
         open={open === "mine"}
         onToggle={() => toggle("mine")}
@@ -98,20 +100,20 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
           <div className="grid grid-cols-2 gap-3">
             <input
               className={inputCls}
-              placeholder="产品 / 品类"
+              placeholder={tt("产品 / 品类")}
               value={product}
               onChange={(e) => setProduct(e.target.value)}
             />
             <input
               className={inputCls}
-              placeholder="目标市场（可选）"
+              placeholder={tt("目标市场（可选）")}
               value={market}
               onChange={(e) => setMarket(e.target.value)}
             />
           </div>
           <textarea
             className={`${inputCls} min-h-28 resize-y`}
-            placeholder="自家产品的卖点、参数、价格、认证、交期等"
+            placeholder={tt("自家产品的卖点、参数、价格、认证、交期等")}
             value={mine}
             onChange={(e) => setMine(e.target.value)}
           />
@@ -120,7 +122,7 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
 
       <StudioSection
         index={2}
-        title="竞品信息（粘贴素材）"
+        title={tt("竞品信息（粘贴素材）")}
         accent={ACCENT}
         open={open === "rivals"}
         onToggle={() => toggle("rivals")}
@@ -128,7 +130,7 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
       >
         <textarea
           className={`${inputCls} min-h-40 resize-y`}
-          placeholder="粘贴一个或多个竞品的信息：产品页文案、Amazon/阿里 listing、参数、报价、用户评价等。多个竞品用「---」或编号区分。"
+          placeholder={tt("粘贴一个或多个竞品的信息：产品页文案、Amazon/阿里 listing、参数、报价、用户评价等。多个竞品用「---」或编号区分。")}
           value={rivals}
           onChange={(e) => setRivals(e.target.value)}
         />
@@ -139,7 +141,7 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
 
       <StudioSection
         index={3}
-        title="对比维度（可选）"
+        title={tt("对比维度（可选）")}
         accent={ACCENT}
         open={open === "dim"}
         onToggle={() => toggle("dim")}
@@ -160,7 +162,7 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
           </div>
           <input
             className={inputCls}
-            placeholder="自定义对比维度（可选）"
+            placeholder={tt("自定义对比维度（可选）")}
             value={dimension}
             onChange={(e) => setDimension(e.target.value)}
           />
@@ -191,7 +193,7 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
       content: (
         <div className="flex h-full flex-col">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-bold text-stone-800">竞品分析报告</h2>
+            <h2 className="text-sm font-bold text-stone-800">{tt("竞品分析报告")}</h2>
             <button
               type="button"
               onClick={() => void copy()}
@@ -205,7 +207,7 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
             <div className="grid flex-1 place-items-center py-16">
               <div className="text-center">
                 <div className="mx-auto h-8 w-8 animate-spin rounded-full border-[3px] border-cyan-200 border-t-cyan-600" />
-                <p className="mt-3 text-xs text-stone-400">正在对比分析…</p>
+                <p className="mt-3 text-xs text-stone-400">{tt("正在对比分析…")}</p>
               </div>
             </div>
           ) : report ? (
@@ -214,8 +216,8 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
             </div>
           ) : (
             <CanvasEmpty
-              title="竞品分析会显示在这里"
-              hint="填写自家产品、粘贴竞品信息，点「生成竞品分析」后即可在此查看、复制。"
+              title={tt("竞品分析会显示在这里")}
+              hint={tt("填写自家产品、粘贴竞品信息，点「生成竞品分析」后即可在此查看、复制。")}
             />
           )}
         </div>

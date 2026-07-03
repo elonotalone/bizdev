@@ -23,6 +23,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
+import { useUI } from "@oceanleo/ui/i18n";
 import {
   browserClient,
   oceanleoConfigured,
@@ -81,6 +82,7 @@ function IconChevronRight({ className = "" }: { className?: string }) {
 }
 
 export function AccountCenter() {
+  const tt = useUI();
   const [user, setUser] = useState<User | null>(null);
   const [checked, setChecked] = useState(false);
   const [balanceYuan, setBalanceYuan] = useState<number | null>(null);
@@ -146,10 +148,10 @@ export function AccountCenter() {
     return (
       <div className="px-8 py-6">
         <h1 className="text-[22px] font-semibold tracking-tight text-neutral-900">
-          账户
+          {tt("账户")}
         </h1>
         <div className="mx-auto mt-10 max-w-md rounded-xl border border-amber-200 bg-amber-50 p-6 text-center text-[13px] text-amber-800">
-          登录服务尚未配置（缺少 Supabase 环境变量）。
+          {tt("登录服务尚未配置（缺少 Supabase 环境变量）。")}
         </div>
       </div>
     );
@@ -160,25 +162,25 @@ export function AccountCenter() {
     return (
       <div className="px-8 py-6">
         <h1 className="text-[22px] font-semibold tracking-tight text-neutral-900">
-          账户
+          {tt("账户")}
         </h1>
         <div className="v-fade-up mx-auto mt-16 max-w-sm text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100 text-2xl">
             👤
           </div>
           <h2 className="mt-5 text-[17px] font-semibold text-neutral-900">
-            尚未登录
+            {tt("尚未登录")}
           </h2>
           <p className="mt-2 text-[13px] leading-relaxed text-neutral-500">
-            登录后即可查看 token 余额与用量。
+            {tt("登录后即可查看 token 余额与用量。")}
             <br />
-            一次登录，全家桶所有 AI 应用通用。
+            {tt("一次登录，全家桶所有 AI 应用通用。")}
           </p>
           <Link
             href="/"
             className="mt-6 inline-block w-full rounded-xl bg-neutral-900 py-2.5 text-[14px] font-medium text-white transition hover:bg-neutral-800 active:scale-[0.99]"
           >
-            返回首页登录
+            {tt("返回首页登录")}
           </Link>
         </div>
       </div>
@@ -192,9 +194,9 @@ export function AccountCenter() {
       {confirmLogout && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4">
           <div className="v-scale-in w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="text-[16px] font-semibold text-neutral-900">退出登录</h3>
+            <h3 className="text-[16px] font-semibold text-neutral-900">{tt("退出登录")}</h3>
             <p className="mt-2 text-[13px] leading-relaxed text-neutral-500">
-              退出后需要重新登录才能使用。这将退出全部 OceanLeo 站点。
+              {tt("退出后需要重新登录才能使用。这将退出全部 OceanLeo 站点。")}
             </p>
             <div className="mt-5 flex justify-end gap-2">
               <button
@@ -202,7 +204,7 @@ export function AccountCenter() {
                 onClick={() => setConfirmLogout(false)}
                 className="rounded-lg border border-neutral-200 px-4 py-2 text-[13px] text-neutral-700 transition hover:bg-neutral-50"
               >
-                取消
+                {tt("取消")}
               </button>
               <button
                 type="button"
@@ -210,7 +212,7 @@ export function AccountCenter() {
                 disabled={signingOut}
                 className="rounded-lg bg-red-600 px-4 py-2 text-[13px] font-medium text-white transition hover:bg-red-500 disabled:opacity-50"
               >
-                {signingOut ? "退出中…" : "退出登录"}
+                {signingOut ? tt("退出中…") : tt("退出登录")}
               </button>
             </div>
           </div>
@@ -218,7 +220,7 @@ export function AccountCenter() {
       )}
 
       <h1 className="text-[22px] font-semibold tracking-tight text-neutral-900">
-        账户
+        {tt("账户")}
       </h1>
 
       <div className="v-fade-up mx-auto mt-8 max-w-lg">
@@ -228,10 +230,10 @@ export function AccountCenter() {
           </div>
           <div className="min-w-0">
             <p className="truncate text-[16px] font-semibold text-neutral-900">
-              {email ? email.split("@")[0] : "未登录"}
+              {email ? email.split("@")[0] : tt("未登录")}
             </p>
             <p className="truncate text-[13px] text-neutral-500">{email || "—"}</p>
-            <p className="mt-1 text-[12px] text-neutral-400">免费计划</p>
+            <p className="mt-1 text-[12px] text-neutral-400">{tt("免费计划")}</p>
           </div>
         </div>
 
@@ -240,19 +242,19 @@ export function AccountCenter() {
             <p className="text-[18px] font-semibold tabular-nums text-neutral-900">
               {balanceYuan !== null ? `¥${balanceYuan.toFixed(2)}` : "..."}
             </p>
-            <p className="text-[11px] text-neutral-500">token 余额</p>
+            <p className="text-[11px] text-neutral-500">{tt("token 余额")}</p>
           </div>
           <div className="rounded-xl border border-neutral-200 p-3 text-center">
             <p className="text-[18px] font-semibold tabular-nums text-neutral-900">
               {monthSpendYuan !== null ? `¥${monthSpendYuan.toFixed(2)}` : "—"}
             </p>
-            <p className="text-[11px] text-neutral-500">本月消耗</p>
+            <p className="text-[11px] text-neutral-500">{tt("本月消耗")}</p>
           </div>
           <div className="rounded-xl border border-neutral-200 p-3 text-center">
             <p className="text-[18px] font-semibold tabular-nums text-neutral-900">
               {requests !== null ? requests.toLocaleString() : "—"}
             </p>
-            <p className="text-[11px] text-neutral-500">近 30 天请求</p>
+            <p className="text-[11px] text-neutral-500">{tt("近 30 天请求")}</p>
           </div>
         </div>
 
@@ -266,9 +268,9 @@ export function AccountCenter() {
               >
                 <div>
                   <p className="text-[13px] font-medium text-neutral-900">
-                    {item.label}
+                    {tt(item.label)}
                   </p>
-                  <p className="text-[12px] text-neutral-500">{item.desc}</p>
+                  <p className="text-[12px] text-neutral-500">{tt(item.desc)}</p>
                 </div>
                 <IconChevronRight className="shrink-0 text-neutral-400 transition-transform group-hover:translate-x-0.5" />
               </a>
@@ -280,9 +282,9 @@ export function AccountCenter() {
               >
                 <div>
                   <p className="text-[13px] font-medium text-neutral-900">
-                    {item.label}
+                    {tt(item.label)}
                   </p>
-                  <p className="text-[12px] text-neutral-500">{item.desc}</p>
+                  <p className="text-[12px] text-neutral-500">{tt(item.desc)}</p>
                 </div>
                 <IconChevronRight className="shrink-0 text-neutral-400 transition-transform group-hover:translate-x-0.5" />
               </Link>
@@ -295,7 +297,7 @@ export function AccountCenter() {
           onClick={() => setConfirmLogout(true)}
           className="mt-6 w-full rounded-xl border border-neutral-200 py-2.5 text-[13px] text-red-600 transition hover:border-red-200 hover:bg-red-50 active:scale-[0.99]"
         >
-          退出登录
+          {tt("退出登录")}
         </button>
       </div>
     </div>

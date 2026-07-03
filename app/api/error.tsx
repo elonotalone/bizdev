@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useUI } from "@oceanleo/ui/i18n";
 
 // Route-segment error boundary for the shared /api page. Keeps a render
 // failure contained to this page (friendly retry card) instead of bubbling up
@@ -14,6 +15,7 @@ export default function ApiError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const tt = useUI();
   useEffect(() => {
     console.error("[api] render error:", error);
   }, [error]);
@@ -21,7 +23,7 @@ export default function ApiError({
   return (
     <div className="flex min-h-[60vh] items-center justify-center px-6">
       <div className="w-full max-w-md rounded-2xl border border-neutral-200 p-6 text-center">
-        <h1 className="text-lg font-semibold text-neutral-900">页面暂时无法加载</h1>
+        <h1 className="text-lg font-semibold text-neutral-900">{tt("页面暂时无法加载")}</h1>
         <p className="mt-2 text-sm text-neutral-600">
           模型列表或余额信息加载失败，请稍后重试。
         </p>

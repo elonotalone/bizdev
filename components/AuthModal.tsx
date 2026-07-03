@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useUI } from "@oceanleo/ui/i18n";
 import { getSupabase, supabaseConfigured } from "@/lib/supabase";
 
 // Login prompt shown when a visitor clicks an AI action while signed out
 // (myselfie pattern: browse freely, sign in only when AI is needed).
 export function AuthModal({ onClose }: { onClose: () => void }) {
+  const tt = useUI();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -70,14 +72,14 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="邮箱"
+                placeholder={tt("邮箱")}
                 className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="密码"
+                placeholder={tt("密码")}
                 onKeyDown={(e) => e.key === "Enter" && void submit()}
                 className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               />

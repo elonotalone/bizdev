@@ -8,6 +8,7 @@ import {
   type ConsoleFunction,
 } from "@oceanleo/ui/shell";
 import type { OpsSchema } from "@oceanleo/ui/lib";
+import { useUI } from "@oceanleo/ui/i18n";
 import { AuthModal } from "@/components/AuthModal";
 import {
   IconReply,
@@ -36,6 +37,7 @@ function validFn(raw: string | null): FnId | "" {
 }
 
 export default function ConsoleClient() {
+  const tt = useUI();
   const router = useRouter();
   const search = useSearchParams();
   const [authOpen, setAuthOpen] = useState(false);
@@ -153,8 +155,8 @@ export default function ConsoleClient() {
         opsWidth={460}
         hideTabs={solo || embed}
         directory={!embed}
-        directoryTitle="LeoBizDev 工作台"
-        directorySubtitle="选一个功能开始——点开后右上角可「返回」切换。"
+        directoryTitle={tt("LeoBizDev 工作台")}
+        directorySubtitle={tt("选一个功能开始——点开后右上角可「返回」切换。")}
         siteId={SITE_ID}
       />
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
