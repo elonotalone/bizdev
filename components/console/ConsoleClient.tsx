@@ -80,20 +80,21 @@ export default function ConsoleClient() {
       schema: OpsSchema;
       ops: React.ReactNode;
       canvas: React.ReactNode;
+      getState: () => Record<string, unknown>;
       applyPatch: (p: OpsPatch) => void;
       reset: () => void;
     } => {
       switch (eng) {
         case "research":
-          return { schema: research.schema, ops: research.ops, canvas: research.canvas, applyPatch: research.applyPatch, reset: research.reset };
+          return { schema: research.schema, ops: research.ops, canvas: research.canvas, getState: research.getState, applyPatch: research.applyPatch, reset: research.reset };
         case "competition":
-          return { schema: competition.schema, ops: competition.ops, canvas: competition.canvas, applyPatch: competition.applyPatch, reset: competition.reset };
+          return { schema: competition.schema, ops: competition.ops, canvas: competition.canvas, getState: competition.getState, applyPatch: competition.applyPatch, reset: competition.reset };
         case "dev-letter":
-          return { schema: devLetter.schema, ops: devLetter.ops, canvas: devLetter.canvas, applyPatch: devLetter.applyPatch, reset: devLetter.reset };
+          return { schema: devLetter.schema, ops: devLetter.ops, canvas: devLetter.canvas, getState: devLetter.getState, applyPatch: devLetter.applyPatch, reset: devLetter.reset };
         case "trade-talk":
-          return { schema: tradeTalk.schema, ops: tradeTalk.ops, canvas: tradeTalk.canvas, applyPatch: tradeTalk.applyPatch, reset: tradeTalk.reset };
+          return { schema: tradeTalk.schema, ops: tradeTalk.ops, canvas: tradeTalk.canvas, getState: tradeTalk.getState, applyPatch: tradeTalk.applyPatch, reset: tradeTalk.reset };
         default:
-          return { schema: reply.schema, ops: reply.ops, canvas: reply.canvas, applyPatch: reply.applyPatch, reset: reply.reset };
+          return { schema: reply.schema, ops: reply.ops, canvas: reply.canvas, getState: reply.getState, applyPatch: reply.applyPatch, reset: reply.reset };
       }
     },
     [reply, research, competition, devLetter, tradeTalk],
@@ -110,6 +111,7 @@ export default function ConsoleClient() {
           schema={bind.schema}
           accent={ACCENT}
           opsContent={bind.ops}
+          getOpsState={bind.getState}
           onApplyPatch={bind.applyPatch}
           opsPrimaryField={PRIMARY[eng]}
         />

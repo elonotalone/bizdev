@@ -382,8 +382,10 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
     actions: [],
   };
 
+  // 「保存工作流」/ getOpsState 快照：只含操作台**输入**字段（主字段 customerMsg + 选项
+  // answerIdea/role/replyType），不含 understanding/reply（AI 生成的结果，非可复用输入）。
   const getState = (): Record<string, unknown> => ({
-    customerMsg, answerIdea, role, replyType, understanding, reply,
+    customerMsg, answerIdea, role, replyType,
   });
 
   const applyPatch = (patch: OpsPatch) => {
