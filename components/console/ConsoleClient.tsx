@@ -81,18 +81,19 @@ export default function ConsoleClient() {
       ops: React.ReactNode;
       canvas: React.ReactNode;
       applyPatch: (p: OpsPatch) => void;
+      reset: () => void;
     } => {
       switch (eng) {
         case "research":
-          return { schema: research.schema, ops: research.ops, canvas: research.canvas, applyPatch: research.applyPatch };
+          return { schema: research.schema, ops: research.ops, canvas: research.canvas, applyPatch: research.applyPatch, reset: research.reset };
         case "competition":
-          return { schema: competition.schema, ops: competition.ops, canvas: competition.canvas, applyPatch: competition.applyPatch };
+          return { schema: competition.schema, ops: competition.ops, canvas: competition.canvas, applyPatch: competition.applyPatch, reset: competition.reset };
         case "dev-letter":
-          return { schema: devLetter.schema, ops: devLetter.ops, canvas: devLetter.canvas, applyPatch: devLetter.applyPatch };
+          return { schema: devLetter.schema, ops: devLetter.ops, canvas: devLetter.canvas, applyPatch: devLetter.applyPatch, reset: devLetter.reset };
         case "trade-talk":
-          return { schema: tradeTalk.schema, ops: tradeTalk.ops, canvas: tradeTalk.canvas, applyPatch: tradeTalk.applyPatch };
+          return { schema: tradeTalk.schema, ops: tradeTalk.ops, canvas: tradeTalk.canvas, applyPatch: tradeTalk.applyPatch, reset: tradeTalk.reset };
         default:
-          return { schema: reply.schema, ops: reply.ops, canvas: reply.canvas, applyPatch: reply.applyPatch };
+          return { schema: reply.schema, ops: reply.ops, canvas: reply.canvas, applyPatch: reply.applyPatch, reset: reply.reset };
       }
     },
     [reply, research, competition, devLetter, tradeTalk],
@@ -122,11 +123,12 @@ export default function ConsoleClient() {
     [bindOf],
   );
 
-  const applyPreset = useCallback(
+  // alignment §3-5（宗旨 v15 决策 D）：进/换成品 app 时把操作台重置回干净态，修「进 A 填了
+  // 内容 → 返回目录 → 进 B 仍显示 A」。旧 applyPreset（进入即灌预置）已是 deprecated no-op，
+  // 反转为「进入即清」——五引擎字段皆为临时生成输入，各自 reset。
+  const onEnterApp = useCallback(
     (app: GoalApp) => {
-      const a = app as BizdevApp;
-      if (!a.preset?.prompt) return;
-      bindOf(a.engine).applyPatch({ set: { [PRIMARY[a.engine]]: a.preset.prompt } });
+      bindOf((app as BizdevApp).engine).reset();
     },
     [bindOf],
   );
@@ -140,7 +142,7 @@ export default function ConsoleClient() {
         apps={apps}
         renderOps={renderOps}
         renderCanvas={renderCanvas}
-        applyPreset={applyPreset}
+        onEnterApp={onEnterApp}
         accent={ACCENT}
         directoryTitle={tt("LeoBizDev 工作台")}
         directorySubtitle={tt("选一个成品开始——点开后右上角可「返回」换一个。")}

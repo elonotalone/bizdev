@@ -28,6 +28,7 @@ export function useReplyFn(onNeedAuth: () => void): {
   schema: OpsSchema;
   getState: () => Record<string, unknown>;
   applyPatch: (patch: OpsPatch) => void;
+  reset: () => void;
 } {
   const tt = useUI();
   const { user } = useUser();
@@ -395,5 +396,21 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
     if (typeof s.reply === "string") setReply(s.reply);
   };
 
-  return { ops, canvas, schema, getState, applyPatch };
+  // alignment §3-5：进/换成品 app 时把本功能操作台重置回干净「输入」态（全是临时生成输入，
+  // 非持久化文档，安全清空）。修「进 A 填了内容 → 换到 B 仍显示 A」。
+  const reset = () => {
+    setOpen("customer");
+    setCustomerMsg("");
+    setAnswerIdea("");
+    setRole(ROLE_PRESETS[0]);
+    setReplyType("email");
+    setUnderstanding("");
+    setReply("");
+    setActiveTab("reply");
+    setRefine("");
+    setError(null);
+    setCopied(false);
+  };
+
+  return { ops, canvas, schema, getState, applyPatch, reset };
 }

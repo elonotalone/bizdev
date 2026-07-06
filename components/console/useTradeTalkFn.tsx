@@ -22,6 +22,7 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
   schema: OpsSchema;
   getState: () => Record<string, unknown>;
   applyPatch: (patch: OpsPatch) => void;
+  reset: () => void;
 } {
   const tt = useUI();
   const { user } = useUser();
@@ -240,5 +241,17 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
     if (typeof s.result === "string") setResult(s.result);
   };
 
-  return { ops, canvas, schema, getState, applyPatch };
+  // alignment §3-5：进/换成品 app 时重置本功能操作台（临时输入，安全清空）。
+  const reset = () => {
+    setOpen("text");
+    setSource("");
+    setTarget("英语");
+    setTone("商务正式");
+    setTerms("");
+    setResult("");
+    setError(null);
+    setCopied(false);
+  };
+
+  return { ops, canvas, schema, getState, applyPatch, reset };
 }

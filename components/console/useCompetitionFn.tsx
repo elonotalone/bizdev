@@ -22,6 +22,7 @@ export function useCompetitionFn(onNeedAuth: () => void): {
   schema: OpsSchema;
   getState: () => Record<string, unknown>;
   applyPatch: (patch: OpsPatch) => void;
+  reset: () => void;
 } {
   const tt = useUI();
   const { user } = useUser();
@@ -253,5 +254,18 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
     if (typeof s.report === "string") setReport(s.report);
   };
 
-  return { ops, canvas, schema, getState, applyPatch };
+  // alignment §3-5：进/换成品 app 时重置本功能操作台（临时输入，安全清空）。
+  const reset = () => {
+    setOpen("mine");
+    setProduct("");
+    setMarket("");
+    setMine("");
+    setRivals("");
+    setDimension("");
+    setReport("");
+    setError(null);
+    setCopied(false);
+  };
+
+  return { ops, canvas, schema, getState, applyPatch, reset };
 }
