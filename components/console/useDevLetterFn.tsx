@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { StudioSection, ResultCanvas, CanvasEmpty, Markdown, type CanvasTab } from "@oceanleo/ui/shell";
+import { StudioSection, CanvasEmpty, Markdown, type CanvasTab } from "@oceanleo/ui/shell";
+import { LibraryCanvas } from "./LibraryCanvas";
 import type { OpsPatch, OpsSchema } from "@oceanleo/ui/lib";
 import { useUI } from "@oceanleo/ui/i18n";
 import { aiChat, AiError } from "@/lib/ai";
@@ -230,7 +231,7 @@ ${customer.trim() ? `目标客户/公司：${customer.trim()}` : "目标客户�
     },
   ];
 
-  const canvas = <ResultCanvas tabs={tabs} active="result" onChange={() => {}} />;
+  const canvas = <LibraryCanvas resultTabs={tabs} />;
 
   const schema: OpsSchema = {
     agentId: "bizdev.dev-letter",

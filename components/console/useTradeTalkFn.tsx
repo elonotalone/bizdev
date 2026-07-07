@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { StudioSection, ResultCanvas, CanvasEmpty, type CanvasTab } from "@oceanleo/ui/shell";
+import { StudioSection, CanvasEmpty, type CanvasTab } from "@oceanleo/ui/shell";
+import { LibraryCanvas } from "./LibraryCanvas";
 import type { OpsPatch, OpsSchema } from "@oceanleo/ui/lib";
 import { useUI } from "@oceanleo/ui/i18n";
 import { aiChat, AiError } from "@/lib/ai";
@@ -209,7 +210,7 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
     },
   ];
 
-  const canvas = <ResultCanvas tabs={tabs} active="result" onChange={() => {}} />;
+  const canvas = <LibraryCanvas resultTabs={tabs} />;
 
   const schema: OpsSchema = {
     agentId: "bizdev.trade-talk",

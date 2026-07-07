@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { StudioSection, ResultCanvas, CanvasEmpty, Markdown, type CanvasTab } from "@oceanleo/ui/shell";
+import { StudioSection, CanvasEmpty, Markdown, type CanvasTab } from "@oceanleo/ui/shell";
+import { LibraryCanvas } from "./LibraryCanvas";
 import type { OpsPatch, OpsSchema } from "@oceanleo/ui/lib";
 import { useUI } from "@oceanleo/ui/i18n";
 import { aiChat, AiError } from "@/lib/ai";
@@ -226,7 +227,7 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
     },
   ];
 
-  const canvas = <ResultCanvas tabs={tabs} active="report" onChange={() => {}} />;
+  const canvas = <LibraryCanvas resultTabs={tabs} />;
 
   const schema: OpsSchema = {
     agentId: "bizdev.competition",

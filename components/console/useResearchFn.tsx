@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { StudioSection, ResultCanvas, CanvasEmpty, Markdown, type CanvasTab } from "@oceanleo/ui/shell";
+import { StudioSection, CanvasEmpty, Markdown, type CanvasTab } from "@oceanleo/ui/shell";
+import { LibraryCanvas } from "./LibraryCanvas";
 import type { OpsPatch, OpsSchema } from "@oceanleo/ui/lib";
 import { useUI } from "@oceanleo/ui/i18n";
 import { aiChat, AiError } from "@/lib/ai";
@@ -215,7 +216,7 @@ ${material.trim() || "（未提供更多素材，请基于公司名与行业常�
     },
   ];
 
-  const canvas = <ResultCanvas tabs={tabs} active="report" onChange={() => {}} />;
+  const canvas = <LibraryCanvas resultTabs={tabs} />;
 
   const schema: OpsSchema = {
     agentId: "bizdev.research",
