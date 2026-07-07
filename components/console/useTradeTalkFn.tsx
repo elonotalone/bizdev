@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { StudioSection, CanvasEmpty, type CanvasTab } from "@oceanleo/ui/shell";
+import { StudioSection, CanvasEmpty, OptionRow, type CanvasTab } from "@oceanleo/ui/shell";
 import { LibraryCanvas } from "./LibraryCanvas";
 import type { OpsPatch, OpsSchema } from "@oceanleo/ui/lib";
 import { useUI } from "@oceanleo/ui/i18n";
@@ -15,10 +15,13 @@ const inputCls =
 
 const LANGS = ["中文", "英语", "西班牙语", "法语", "德语", "俄语", "阿拉伯语", "葡萄牙语", "日语"];
 const TONES = ["商务正式", "友好亲切", "简洁直接"];
+const DEFAULT_TARGET = "英语";
+const DEFAULT_TONE = "商务正式";
 
 // 外贸翻译功能区（新增 A 类）：外贸语境多语种互译 + 本地化（保留术语/商务礼仪/单位）。
 export function useTradeTalkFn(onNeedAuth: () => void): {
   ops: React.ReactNode;
+  sticky: React.ReactNode;
   canvas: React.ReactNode;
   schema: OpsSchema;
   getState: () => Record<string, unknown>;
@@ -107,41 +110,21 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
         <div className="space-y-3">
           <div>
             <div className="mb-1.5 text-xs font-medium text-stone-500">{tt("目标语言")}</div>
-            <div className="flex flex-wrap gap-2">
-              {LANGS.map((l) => (
-                <button
-                  key={l}
-                  type="button"
-                  onClick={() => setTarget(l)}
-                  className={`rounded-full px-3 py-1 text-xs font-medium transition ${
-                    target === l
-                      ? "bg-cyan-700 text-white"
-                      : "border border-stone-300 text-stone-600 hover:bg-stone-50"
-                  }`}
-                >
-                  {l}
-                </button>
-              ))}
-            </div>
+            <OptionRow
+              accent={ACCENT}
+              options={LANGS.map((l) => ({ value: l, label: l }))}
+              value={target}
+              onChange={(v) => setTarget(v ?? DEFAULT_TARGET)}
+            />
           </div>
           <div>
             <div className="mb-1.5 text-xs font-medium text-stone-500">{tt("语气")}</div>
-            <div className="flex flex-wrap gap-2">
-              {TONES.map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setTone(t)}
-                  className={`rounded-full px-3 py-1 text-xs font-medium transition ${
-                    tone === t
-                      ? "bg-cyan-700 text-white"
-                      : "border border-stone-300 text-stone-600 hover:bg-stone-50"
-                  }`}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
+            <OptionRow
+              accent={ACCENT}
+              options={TONES.map((t) => ({ value: t, label: t }))}
+              value={tone}
+              onChange={(v) => setTone(v ?? DEFAULT_TONE)}
+            />
           </div>
           <textarea
             className={`${inputCls} min-h-16 resize-y`}
@@ -151,7 +134,12 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
           />
         </div>
       </StudioSection>
+    </div>
+  );
 
+  // 宗旨 v18：主按钮「翻译」+ 错误提示恒定在操作台底部（FunctionAgentChat stickyAction）。
+  const sticky = (
+    <div className="space-y-2">
       {error && (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
           {error}
@@ -254,5 +242,5 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
     setCopied(false);
   };
 
-  return { ops, canvas, schema, getState, applyPatch, reset };
+  return { ops, sticky, canvas, schema, getState, applyPatch, reset };
 }

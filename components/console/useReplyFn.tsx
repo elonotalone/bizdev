@@ -8,6 +8,7 @@ import {
   Markdown,
   MaterialLibrary,
   ArtifactLibrary,
+  OptionRow,
   type CanvasTab,
 } from "@oceanleo/ui/shell";
 import { MATERIALS } from "@/lib/materials";
@@ -31,8 +32,11 @@ const ROLE_PRESETS = [
 // 智能回复功能区（旧 ReplyAssistant 的 A 类核心，gateway-native）：粘贴客户消息 →
 // AI 给「理解与对策」+ 生成专业回复，可选 email/whatsapp、可指定角色语气、可润色。
 // 旧版的「全网检索 / 文件库 RAG / 客户大师」依赖 trade-engine + Twenty 表，本轮 deferred。
+const DEFAULT_ROLE = ROLE_PRESETS[0];
+
 export function useReplyFn(onNeedAuth: () => void): {
   ops: React.ReactNode;
+  sticky: React.ReactNode;
   canvas: React.ReactNode;
   schema: OpsSchema;
   getState: () => Record<string, unknown>;
@@ -230,42 +234,29 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
         summary={`${tt(role.split("：")[0])} · ${replyType === "email" ? tt("邮件") : "WhatsApp"}`}
       >
         <div className="space-y-3">
-          <div className="flex flex-wrap gap-2">
-            {ROLE_PRESETS.map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setRole(r)}
-                title={r}
-                className={`rounded-full px-3 py-1 text-xs font-medium transition ${
-                  role === r
-                    ? "bg-cyan-700 text-white"
-                    : "border border-stone-300 text-stone-600 hover:bg-stone-50"
-                }`}
-              >
-                {tt(r.split("：")[0])}
-              </button>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            {(["email", "whatsapp"] as const).map((t) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setReplyType(t)}
-                className={`rounded-xl border px-4 py-2 text-xs font-medium transition ${
-                  replyType === t
-                    ? "border-cyan-300 bg-cyan-50 text-cyan-900"
-                    : "border-stone-300 text-stone-600 hover:bg-stone-50"
-                }`}
-              >
-                {t === "email" ? tt("📧 邮件回复") : tt("💬 WhatsApp 短回复")}
-              </button>
-            ))}
-          </div>
+          <OptionRow
+            accent={ACCENT}
+            options={ROLE_PRESETS.map((r) => ({ value: r, label: r.split("：")[0] }))}
+            value={role}
+            onChange={(v) => setRole(v ?? DEFAULT_ROLE)}
+          />
+          <OptionRow
+            accent={ACCENT}
+            options={[
+              { value: "email", label: "📧 邮件回复" },
+              { value: "whatsapp", label: "💬 WhatsApp 短回复" },
+            ]}
+            value={replyType}
+            onChange={(v) => setReplyType((v as "email" | "whatsapp" | null) ?? "email")}
+          />
         </div>
       </StudioSection>
+    </div>
+  );
 
+  // 宗旨 v18：主按钮「生成客户回复」+ 错误提示恒定在操作台底部（FunctionAgentChat stickyAction）。
+  const sticky = (
+    <div className="space-y-2">
       {error && (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
           {error}
@@ -430,5 +421,5 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
     setCopied(false);
   };
 
-  return { ops, canvas, schema, getState, applyPatch, reset };
+  return { ops, sticky, canvas, schema, getState, applyPatch, reset };
 }
