@@ -8,6 +8,7 @@ import {
   Markdown,
   MaterialLibrary,
   ArtifactLibrary,
+  LeoComposer,
   OptionRow,
   type CanvasTab,
 } from "@oceanleo/ui/shell";
@@ -50,6 +51,9 @@ export function useReplyFn(onNeedAuth: () => void): {
     setOpen((cur) => (cur === s ? null : s));
 
   const [customerMsg, setCustomerMsg] = useState("");
+  // 宗旨 v15/v19：主输入字段走「模板实填」——点右侧导航卡片经 onApplyPatch 灌带 [占位]
+  // 的模板时驱动 LeoComposer 的 highlightTemplate（字面实填 + 占位 chip）。手输时为 null。
+  const [customerMsgTemplate, setCustomerMsgTemplate] = useState<string | null>(null);
   const [answerIdea, setAnswerIdea] = useState("");
   const [role, setRole] = useState(ROLE_PRESETS[0]);
   const [replyType, setReplyType] = useState<"email" | "whatsapp">("email");
@@ -193,11 +197,13 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
         onToggle={() => toggle("customer")}
         summary={customerMsg ? tt("已填写") : tt("粘贴客户邮件/WhatsApp")}
       >
-        <textarea
-          className={`${inputCls} min-h-32 resize-y`}
-          placeholder={tt("粘贴客户提出的问题/邮件/WhatsApp 消息…")}
+        <LeoComposer
           value={customerMsg}
-          onChange={(e) => setCustomerMsg(e.target.value)}
+          onChange={setCustomerMsg}
+          leoSuggest
+          highlightTemplate={customerMsgTemplate}
+          accentColor={ACCENT}
+          placeholder={tt("粘贴客户提出的问题/邮件/WhatsApp 消息…")}
         />
         <button
           type="button"
@@ -397,7 +403,12 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
 
   const applyPatch = (patch: OpsPatch) => {
     const s = patch.set || {};
-    if (typeof s.customerMsg === "string") setCustomerMsg(s.customerMsg);
+    // 主输入走「模板实填」：清空值 + 设模板 → LeoComposer(TemplateFillArea) 依 highlightTemplate
+    // 重新 seed（含 [占位] chip）。同一张卡再点也重灌（中心化于 PromptHighlightArea，无需 raf 舞蹈）。
+    if (typeof s.customerMsg === "string") {
+      setCustomerMsg("");
+      setCustomerMsgTemplate(s.customerMsg);
+    }
     if (typeof s.answerIdea === "string") setAnswerIdea(s.answerIdea);
     if (typeof s.role === "string") setRole(s.role);
     if (s.replyType === "email" || s.replyType === "whatsapp") setReplyType(s.replyType);
@@ -410,6 +421,7 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
   const reset = () => {
     setOpen("customer");
     setCustomerMsg("");
+    setCustomerMsgTemplate(null);
     setAnswerIdea("");
     setRole(ROLE_PRESETS[0]);
     setReplyType("email");

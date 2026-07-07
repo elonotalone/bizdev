@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { StudioSection, CanvasEmpty, OptionRow, type CanvasTab } from "@oceanleo/ui/shell";
+import { StudioSection, CanvasEmpty, LeoComposer, OptionRow, type CanvasTab } from "@oceanleo/ui/shell";
 import { LibraryCanvas } from "./LibraryCanvas";
 import type { OpsPatch, OpsSchema } from "@oceanleo/ui/lib";
 import { useUI } from "@oceanleo/ui/i18n";
@@ -34,6 +34,8 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
   const toggle = (s: "text" | "opts") => setOpen((cur) => (cur === s ? null : s));
 
   const [source, setSource] = useState("");
+  // 宗旨 v15/v19：主输入字段「原文」走模板实填（点导航卡灌 highlightTemplate）。
+  const [sourceTemplate, setSourceTemplate] = useState<string | null>(null);
   const [target, setTarget] = useState("英语");
   const [tone, setTone] = useState("商务正式");
   const [terms, setTerms] = useState("");
@@ -91,11 +93,13 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
         onToggle={() => toggle("text")}
         summary={source ? "已填写" : "粘贴待翻译文本"}
       >
-        <textarea
-          className={`${inputCls} min-h-40 resize-y`}
-          placeholder={tt("粘贴要翻译的外贸文本（邮件/产品描述/合同条款/话术…）")}
+        <LeoComposer
           value={source}
-          onChange={(e) => setSource(e.target.value)}
+          onChange={setSource}
+          leoSuggest
+          highlightTemplate={sourceTemplate}
+          accentColor={ACCENT}
+          placeholder={tt("粘贴要翻译的外贸文本（邮件/产品描述/合同条款/话术…）")}
         />
       </StudioSection>
 
@@ -223,7 +227,11 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
 
   const applyPatch = (patch: OpsPatch) => {
     const s = patch.set || {};
-    if (typeof s.source === "string") setSource(s.source);
+    // 主输入走模板实填：清空值 + 设模板 → LeoComposer 依 highlightTemplate 重新 seed。
+    if (typeof s.source === "string") {
+      setSource("");
+      setSourceTemplate(s.source);
+    }
     if (typeof s.target === "string") setTarget(s.target);
     if (typeof s.tone === "string") setTone(s.tone);
     if (typeof s.terms === "string") setTerms(s.terms);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { StudioSection, CanvasEmpty, Markdown, type CanvasTab } from "@oceanleo/ui/shell";
+import { StudioSection, CanvasEmpty, Markdown, LeoComposer, type CanvasTab } from "@oceanleo/ui/shell";
 import { LibraryCanvas } from "./LibraryCanvas";
 import type { OpsPatch, OpsSchema } from "@oceanleo/ui/lib";
 import { useUI } from "@oceanleo/ui/i18n";
@@ -28,7 +28,7 @@ export function useCompetitionFn(onNeedAuth: () => void): {
 } {
   const tt = useUI();
   const { user } = useUser();
-  const [open, setOpen] = useState<"mine" | "rivals" | "dim" | null>("mine");
+  const [open, setOpen] = useState<"mine" | "rivals" | "dim" | null>("rivals");
   const toggle = (s: "mine" | "rivals" | "dim") =>
     setOpen((cur) => (cur === s ? null : s));
 
@@ -36,6 +36,8 @@ export function useCompetitionFn(onNeedAuth: () => void): {
   const [market, setMarket] = useState("");
   const [mine, setMine] = useState("");
   const [rivals, setRivals] = useState("");
+  // 宗旨 v15/v19：主输入字段「竞品信息」走模板实填（点导航卡灌 highlightTemplate）。
+  const [rivalsTemplate, setRivalsTemplate] = useState<string | null>(null);
   const [dimension, setDimension] = useState("");
   const [report, setReport] = useState("");
   const [busy, setBusy] = useState(false);
@@ -91,8 +93,30 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
 
   const ops = (
     <div className="space-y-3">
+      {/* 宗旨 v19：操作台最上面 = 自由输入框（竞品信息主字段），点右侧导航卡片灌模板实填。 */}
       <StudioSection
         index={1}
+        title={tt("竞品信息（粘贴素材）")}
+        accent={ACCENT}
+        open={open === "rivals"}
+        onToggle={() => toggle("rivals")}
+        summary={rivals ? "已粘贴" : "竞品资料/listing/报价"}
+      >
+        <LeoComposer
+          value={rivals}
+          onChange={setRivals}
+          leoSuggest
+          highlightTemplate={rivalsTemplate}
+          accentColor={ACCENT}
+          placeholder={tt("粘贴一个或多个竞品的信息：产品页文案、Amazon/阿里 listing、参数、报价、用户评价等。多个竞品用「---」或编号区分。")}
+        />
+        <p className="mt-2 text-xs text-stone-400">
+          提示：本功能基于你提供的素材分析；「全网自动扫描竞品」待后端部署后开放。
+        </p>
+      </StudioSection>
+
+      <StudioSection
+        index={2}
         title={tt("自家产品")}
         accent={ACCENT}
         open={open === "mine"}
@@ -121,25 +145,6 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
             onChange={(e) => setMine(e.target.value)}
           />
         </div>
-      </StudioSection>
-
-      <StudioSection
-        index={2}
-        title={tt("竞品信息（粘贴素材）")}
-        accent={ACCENT}
-        open={open === "rivals"}
-        onToggle={() => toggle("rivals")}
-        summary={rivals ? "已粘贴" : "竞品资料/listing/报价"}
-      >
-        <textarea
-          className={`${inputCls} min-h-40 resize-y`}
-          placeholder={tt("粘贴一个或多个竞品的信息：产品页文案、Amazon/阿里 listing、参数、报价、用户评价等。多个竞品用「---」或编号区分。")}
-          value={rivals}
-          onChange={(e) => setRivals(e.target.value)}
-        />
-        <p className="mt-2 text-xs text-stone-400">
-          提示：本功能基于你提供的素材分析；「全网自动扫描竞品」待后端部署后开放。
-        </p>
       </StudioSection>
 
       <StudioSection
@@ -256,18 +261,23 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
     if (typeof s.product === "string") setProduct(s.product);
     if (typeof s.market === "string") setMarket(s.market);
     if (typeof s.mine === "string") setMine(s.mine);
-    if (typeof s.rivals === "string") setRivals(s.rivals);
+    // 主输入走模板实填：清空值 + 设模板 → LeoComposer 依 highlightTemplate 重新 seed。
+    if (typeof s.rivals === "string") {
+      setRivals("");
+      setRivalsTemplate(s.rivals);
+    }
     if (typeof s.dimension === "string") setDimension(s.dimension);
     if (typeof s.report === "string") setReport(s.report);
   };
 
   // alignment §3-5：进/换成品 app 时重置本功能操作台（临时输入，安全清空）。
   const reset = () => {
-    setOpen("mine");
+    setOpen("rivals");
     setProduct("");
     setMarket("");
     setMine("");
     setRivals("");
+    setRivalsTemplate(null);
     setDimension("");
     setReport("");
     setError(null);
