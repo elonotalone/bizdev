@@ -68,7 +68,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
     <AppShell
       brand={{ name: "LeoBizDev", accent: ACCENT, logo: <BrandLogo /> }}
       collapseKey="bizdev_sidebar_collapsed"
-      modelCategories={["text"]}
+      modelCategories={["text", "image", "video", "threed", "audio"]}
       siteId={SITE_ID}
       nav={NAV}
       userEmail={user?.email}
