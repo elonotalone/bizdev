@@ -72,9 +72,30 @@ function app(
     capabilities: tagline,
     engine,
     scenes,
-    preset: { prompt: promptTemplate },
+    // 宗旨 v19（操作员 2026-07-08）：点导航卡片 = 操作台【完整】回填，含选择框（OptionRow）。
+    // 三个引擎的操作台各有 OptionRow，且其 applyPatch 已支持对应 set.<field>；这里按引擎补默认档，
+    // withGuideDefaults 会并进每张导航卡 → 点任意卡片这些 OptionRow 都被选中（而非只填正文）。
+    preset: { prompt: promptTemplate, ...engineDefaultSet(engine) },
     guideSections,
   };
+}
+
+// 各引擎操作台 OptionRow 的默认档（值取自各 useXxxFn 的 DEFAULT_*）：
+//   reply      → role（角色人设，默认首档）、replyType（email/whatsapp，默认 email）
+//   dev-letter → scene（开发信情形，默认 cold）、lang（语言，默认英语）
+//   trade-talk → target（目标语言，默认英语）、tone（语气，默认商务正式）
+// 其它引擎（research/competition）操作台无 OptionRow，返回空。
+function engineDefaultSet(engine: BizdevEngine): { set?: Record<string, unknown> } {
+  switch (engine) {
+    case "reply":
+      return { set: { role: "高级销售经理：专业、自信、导向成交", replyType: "email" } };
+    case "dev-letter":
+      return { set: { scene: "cold", lang: "英语" } };
+    case "trade-talk":
+      return { set: { target: "英语", tone: "商务正式" } };
+    default:
+      return {};
+  }
 }
 
 // ============================================================================
@@ -164,7 +185,7 @@ export const BIZDEV_APPS: BizdevApp[] = [
     "cold-email", "开发信", "✉️", "#0e7490",
     "目标客户 → 高回复率开发信",
     "dev-letter", [BIZDEV_SCENES.develop],
-    "核心卖点/亮点（每行一条）：质量优势 [ ]、价格/认证 [ ]、交期与 MOQ [ ]、工厂实力/成功案例 [ ]\n（在上方顶部字段填目标客户与推广产品，AI 将写 2 个不同切入角度的开发信版本。）",
+    "核心卖点/亮点（每行一条）：质量与价格/认证 [ ]、交期与 MOQ [ ]、工厂实力/成功案例 [ ]\n（在上方顶部字段填目标客户与推广产品，AI 将写 2 个不同切入角度的开发信版本。）",
     sections(
       [
         tpl("冷启动", "首次触达", "写一封冷启动开发信，产品 [产品]，卖点 [卖点]", "❄️"),
