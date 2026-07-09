@@ -56,7 +56,7 @@ export function useReplyFn(onNeedAuth: () => void): {
   const [customerMsgTemplate, setCustomerMsgTemplate] = useState<string | null>(null);
   const [answerIdea, setAnswerIdea] = useState("");
   const [role, setRole] = useState(ROLE_PRESETS[0]);
-  const [replyType, setReplyType] = useState<"email" | "whatsapp">("email");
+  const [replyType, setReplyType] = useState<"email" | "whatsapp" | "">("email");
 
   const [understanding, setUnderstanding] = useState("");
   const [reply, setReply] = useState("");

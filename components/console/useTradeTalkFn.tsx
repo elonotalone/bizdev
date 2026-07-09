@@ -52,15 +52,18 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
     }
     if (!user) return onNeedAuth();
     setBusy(true);
+    // 选项可被取消（置空）；生成时按默认档兜底，保证 prompt 始终明确。
+    const targetV = target || DEFAULT_TARGET;
+    const toneV = tone || DEFAULT_TONE;
     try {
       const text = await aiChat({
         max_tokens: 2500,
         temperature: 0.3,
-        system: `你是专业外贸本地化译员。把用户文本翻译成${target}，做到：①外贸/商务语境准确；②${tone}的语气；③保留并统一行业术语；④按目标语言地区习惯本地化（计量单位、货币、日期、礼貌用语）；⑤保留原文段落与列表格式。只输出译文，不要解释。`,
+        system: `你是专业外贸本地化译员。把用户文本翻译成${targetV}，做到：①外贸/商务语境准确；②${toneV}的语气；③保留并统一行业术语；④按目标语言地区习惯本地化（计量单位、货币、日期、礼貌用语）；⑤保留原文段落与列表格式。只输出译文，不要解释。`,
         messages: [
           {
             role: "user",
-            content: `${terms.trim() ? `需保持一致的术语对照：\n${terms.trim()}\n\n` : ""}待翻译文本（翻成${target}）：\n${source.trim()}`,
+            content: `${terms.trim() ? `需保持一致的术语对照：\n${terms.trim()}\n\n` : ""}待翻译文本（翻成${targetV}）：\n${source.trim()}`,
           },
         ],
       });
@@ -118,7 +121,7 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
               accent={ACCENT}
               options={LANGS.map((l) => ({ value: l, label: l }))}
               value={target}
-              onChange={(v) => setTarget(v ?? DEFAULT_TARGET)}
+              onChange={(v) => setTarget(v ?? "")}
             />
           </div>
           <div>
@@ -127,7 +130,7 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
               accent={ACCENT}
               options={TONES.map((t) => ({ value: t, label: t }))}
               value={tone}
-              onChange={(v) => setTone(v ?? DEFAULT_TONE)}
+              onChange={(v) => setTone(v ?? "")}
             />
           </div>
           <textarea
@@ -156,7 +159,7 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
         className="w-full rounded-2xl px-4 py-3 text-sm font-bold text-white shadow-md transition hover:opacity-90 disabled:opacity-50"
         style={{ background: "linear-gradient(135deg, var(--grad-from), var(--grad-to))" }}
       >
-        {busy ? "AI 翻译中…" : `翻译成${target} ✦`}
+        {busy ? "AI 翻译中…" : `翻译成${target || DEFAULT_TARGET} ✦`}
       </button>
     </div>
   );
@@ -182,7 +185,7 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
             <div className="grid flex-1 place-items-center py-16">
               <div className="text-center">
                 <div className="mx-auto h-8 w-8 animate-spin rounded-full border-[3px] border-cyan-200 border-t-cyan-600" />
-                <p className="mt-3 text-xs text-stone-400">正在翻译成 {target}…</p>
+                <p className="mt-3 text-xs text-stone-400">正在翻译成 {target || DEFAULT_TARGET}…</p>
               </div>
             </div>
           ) : result ? (
