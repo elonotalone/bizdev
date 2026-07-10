@@ -93,10 +93,7 @@ export function AccountCenter() {
 
   useEffect(() => {
     const c = browserClient();
-    if (!c) {
-      setChecked(true);
-      return;
-    }
+    if (!c) return;
     // SSO 修复（2026-07-01）：用 getSession() 读本地共享 cookie 里的会话，而不是
     // getUser()。getUser() 会向 Supabase Auth 服务器发网络请求校验 access_token，
     // 在跨子域 SSO 场景下（token 刚打开页面尚未刷新 / access_token 已过期而 refresh

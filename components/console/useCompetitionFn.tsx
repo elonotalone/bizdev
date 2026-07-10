@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { StudioSection, CanvasEmpty, Markdown, LeoComposer, type CanvasTab } from "@oceanleo/ui/shell";
 import { LibraryCanvas } from "./LibraryCanvas";
 import type { OpsPatch, OpsSchema } from "@oceanleo/ui/lib";
@@ -15,6 +15,15 @@ const inputCls =
 
 const DIM_TAGS = ["价格策略", "产品功能对比", "卖点与差异化", "目标客户", "营销渠道", "用户评价/槽点"];
 
+function restoredTemplate(value: unknown, input: string): string | null {
+  if (typeof value !== "string") return null;
+  return value.replace(/\n/g, " ") === input ? value : null;
+}
+
+function isCanvasView(value: unknown): value is "report" | "material" | "files" {
+  return value === "report" || value === "material" || value === "files";
+}
+
 // 竞品分析功能区（旧 ProductCompetition/MarketCompetition 的 A 类核心）：用户粘贴自家 +
 // 竞品信息 → AI 出对比报告与差异化打法。旧版「全网扫描竞品」依赖 trade-engine，deferred。
 export function useCompetitionFn(onNeedAuth: () => void): {
@@ -24,6 +33,8 @@ export function useCompetitionFn(onNeedAuth: () => void): {
   schema: OpsSchema;
   getState: () => Record<string, unknown>;
   applyPatch: (patch: OpsPatch) => void;
+  getSessionSnapshot: () => Record<string, unknown>;
+  restoreSessionSnapshot: (snapshot: Record<string, unknown>) => void;
   reset: () => void;
 } {
   const tt = useUI();
@@ -43,6 +54,7 @@ export function useCompetitionFn(onNeedAuth: () => void): {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [canvasView, setCanvasView] = useState("report");
 
   const generate = async () => {
     setError(null);
@@ -238,7 +250,13 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
     },
   ];
 
-  const canvas = <LibraryCanvas resultTabs={tabs} />;
+  const canvas = (
+    <LibraryCanvas
+      resultTabs={tabs}
+      active={canvasView}
+      onChange={setCanvasView}
+    />
+  );
 
   const schema: OpsSchema = {
     agentId: "bizdev.competition",
@@ -270,6 +288,70 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
     if (typeof s.report === "string") setReport(s.report);
   };
 
+  const getSessionSnapshot = useCallback(
+    (): Record<string, unknown> => ({
+      engine: "competition",
+      product,
+      market,
+      mine,
+      rivals,
+      rivalsTemplate,
+      dimension,
+      report,
+      open,
+      canvasView,
+      error,
+      busy: false,
+    }),
+    [
+      product,
+      market,
+      mine,
+      rivals,
+      rivalsTemplate,
+      dimension,
+      report,
+      open,
+      canvasView,
+      error,
+    ],
+  );
+
+  const restoreSessionSnapshot = useCallback(
+    (snapshot: Record<string, unknown>) => {
+      if (
+        typeof snapshot.engine === "string" &&
+        snapshot.engine !== "competition"
+      ) {
+        return;
+      }
+      const nextRivals =
+        typeof snapshot.rivals === "string" ? snapshot.rivals : "";
+      setProduct(typeof snapshot.product === "string" ? snapshot.product : "");
+      setMarket(typeof snapshot.market === "string" ? snapshot.market : "");
+      setMine(typeof snapshot.mine === "string" ? snapshot.mine : "");
+      setRivals(nextRivals);
+      setRivalsTemplate(restoredTemplate(snapshot.rivalsTemplate, nextRivals));
+      setDimension(
+        typeof snapshot.dimension === "string" ? snapshot.dimension : "",
+      );
+      setReport(typeof snapshot.report === "string" ? snapshot.report : "");
+      setOpen(
+        snapshot.open === "mine" ||
+          snapshot.open === "rivals" ||
+          snapshot.open === "dim" ||
+          snapshot.open === null
+          ? snapshot.open
+          : "rivals",
+      );
+      setCanvasView(isCanvasView(snapshot.canvasView) ? snapshot.canvasView : "report");
+      setError(typeof snapshot.error === "string" ? snapshot.error : null);
+      setBusy(false);
+      setCopied(false);
+    },
+    [],
+  );
+
   // alignment §3-5：进/换成品 app 时重置本功能操作台（临时输入，安全清空）。
   const reset = () => {
     setOpen("rivals");
@@ -280,9 +362,20 @@ ${rivals.trim() || "（未提供具体竞品，请基于品类给出常见竞争
     setRivalsTemplate(null);
     setDimension("");
     setReport("");
+    setCanvasView("report");
     setError(null);
     setCopied(false);
   };
 
-  return { ops, sticky, canvas, schema, getState, applyPatch, reset };
+  return {
+    ops,
+    sticky,
+    canvas,
+    schema,
+    getState,
+    applyPatch,
+    getSessionSnapshot,
+    restoreSessionSnapshot,
+    reset,
+  };
 }

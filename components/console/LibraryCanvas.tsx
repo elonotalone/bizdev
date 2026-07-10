@@ -23,11 +23,17 @@ const ACCENT = "#0e7490";
 export function LibraryCanvas({
   resultTabs,
   accent = ACCENT,
+  active,
+  onChange,
 }: {
   resultTabs: CanvasTab[];
   accent?: string;
+  active?: string;
+  onChange?: (id: string) => void;
 }) {
-  const [view, setView] = useState(resultTabs[0]?.id ?? "result");
+  const [localView, setLocalView] = useState(resultTabs[0]?.id ?? "result");
+  const view = active ?? localView;
+  const setView = onChange ?? setLocalView;
   const tabs: CanvasTab[] = [
     ...resultTabs,
     {

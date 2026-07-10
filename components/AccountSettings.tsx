@@ -25,10 +25,7 @@ export function AccountSettings() {
 
   useEffect(() => {
     const c = browserClient();
-    if (!c) {
-      setChecked(true);
-      return;
-    }
+    if (!c) return;
     // SSO 修复（2026-07-01）：getSession() 读本地共享 cookie（自动续期），而非
     // getUser() 的网络校验——后者在跨子域场景下会误判为未登录。详见 AccountCenter。
     c.auth.getSession().then(({ data }) => {

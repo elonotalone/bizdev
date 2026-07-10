@@ -32,6 +32,7 @@ import { BIZDEV_APPS, type BizdevApp, type BizdevEngine } from "@/lib/app-catalo
 
 const ACCENT = "#0e7490";
 const SITE_ID = "bizdev";
+const SESSION_SCHEMA_VERSION = 1;
 
 // 每个引擎的「主自由文本字段」（灌预置 / 填模板卡用）。
 const PRIMARY: Record<BizdevEngine, string> = {
@@ -83,19 +84,21 @@ export default function ConsoleClient() {
       canvas: React.ReactNode;
       getState: () => Record<string, unknown>;
       applyPatch: (p: OpsPatch) => void;
+      getSessionSnapshot: () => Record<string, unknown>;
+      restoreSessionSnapshot: (snapshot: Record<string, unknown>) => void;
       reset: () => void;
     } => {
       switch (eng) {
         case "research":
-          return { schema: research.schema, ops: research.ops, sticky: research.sticky, canvas: research.canvas, getState: research.getState, applyPatch: research.applyPatch, reset: research.reset };
+          return { schema: research.schema, ops: research.ops, sticky: research.sticky, canvas: research.canvas, getState: research.getState, applyPatch: research.applyPatch, getSessionSnapshot: research.getSessionSnapshot, restoreSessionSnapshot: research.restoreSessionSnapshot, reset: research.reset };
         case "competition":
-          return { schema: competition.schema, ops: competition.ops, sticky: competition.sticky, canvas: competition.canvas, getState: competition.getState, applyPatch: competition.applyPatch, reset: competition.reset };
+          return { schema: competition.schema, ops: competition.ops, sticky: competition.sticky, canvas: competition.canvas, getState: competition.getState, applyPatch: competition.applyPatch, getSessionSnapshot: competition.getSessionSnapshot, restoreSessionSnapshot: competition.restoreSessionSnapshot, reset: competition.reset };
         case "dev-letter":
-          return { schema: devLetter.schema, ops: devLetter.ops, sticky: devLetter.sticky, canvas: devLetter.canvas, getState: devLetter.getState, applyPatch: devLetter.applyPatch, reset: devLetter.reset };
+          return { schema: devLetter.schema, ops: devLetter.ops, sticky: devLetter.sticky, canvas: devLetter.canvas, getState: devLetter.getState, applyPatch: devLetter.applyPatch, getSessionSnapshot: devLetter.getSessionSnapshot, restoreSessionSnapshot: devLetter.restoreSessionSnapshot, reset: devLetter.reset };
         case "trade-talk":
-          return { schema: tradeTalk.schema, ops: tradeTalk.ops, sticky: tradeTalk.sticky, canvas: tradeTalk.canvas, getState: tradeTalk.getState, applyPatch: tradeTalk.applyPatch, reset: tradeTalk.reset };
+          return { schema: tradeTalk.schema, ops: tradeTalk.ops, sticky: tradeTalk.sticky, canvas: tradeTalk.canvas, getState: tradeTalk.getState, applyPatch: tradeTalk.applyPatch, getSessionSnapshot: tradeTalk.getSessionSnapshot, restoreSessionSnapshot: tradeTalk.restoreSessionSnapshot, reset: tradeTalk.reset };
         default:
-          return { schema: reply.schema, ops: reply.ops, sticky: reply.sticky, canvas: reply.canvas, getState: reply.getState, applyPatch: reply.applyPatch, reset: reply.reset };
+          return { schema: reply.schema, ops: reply.ops, sticky: reply.sticky, canvas: reply.canvas, getState: reply.getState, applyPatch: reply.applyPatch, getSessionSnapshot: reply.getSessionSnapshot, restoreSessionSnapshot: reply.restoreSessionSnapshot, reset: reply.reset };
       }
     },
     [reply, research, competition, devLetter, tradeTalk],
@@ -115,6 +118,9 @@ export default function ConsoleClient() {
           stickyAction={bind.sticky}
           getOpsState={bind.getState}
           onApplyPatch={bind.applyPatch}
+          getSessionSnapshot={bind.getSessionSnapshot}
+          onRestoreSessionSnapshot={bind.restoreSessionSnapshot}
+          sessionSchemaVersion={SESSION_SCHEMA_VERSION}
           opsPrimaryField={PRIMARY[eng]}
         />
       );

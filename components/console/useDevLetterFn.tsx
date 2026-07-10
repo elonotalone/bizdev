@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { StudioSection, CanvasEmpty, Markdown, LeoComposer, OptionRow, type CanvasTab } from "@oceanleo/ui/shell";
 import { LibraryCanvas } from "./LibraryCanvas";
 import type { OpsPatch, OpsSchema } from "@oceanleo/ui/lib";
@@ -23,6 +23,15 @@ const LANGS = ["英语", "西班牙语", "法语", "德语", "阿拉伯语", "�
 const DEFAULT_SCENE = "cold";
 const DEFAULT_LANG = "英语";
 
+function restoredTemplate(value: unknown, input: string): string | null {
+  if (typeof value !== "string") return null;
+  return value.replace(/\n/g, " ") === input ? value : null;
+}
+
+function isCanvasView(value: unknown): value is "result" | "material" | "files" {
+  return value === "result" || value === "material" || value === "files";
+}
+
 // 开发信功能区（新增 A 类）：按目标客户/产品/卖点 → AI 写多版本外贸开发信。
 export function useDevLetterFn(onNeedAuth: () => void): {
   ops: React.ReactNode;
@@ -31,6 +40,8 @@ export function useDevLetterFn(onNeedAuth: () => void): {
   schema: OpsSchema;
   getState: () => Record<string, unknown>;
   applyPatch: (patch: OpsPatch) => void;
+  getSessionSnapshot: () => Record<string, unknown>;
+  restoreSessionSnapshot: (snapshot: Record<string, unknown>) => void;
   reset: () => void;
 } {
   const tt = useUI();
@@ -50,6 +61,7 @@ export function useDevLetterFn(onNeedAuth: () => void): {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [canvasView, setCanvasView] = useState("result");
 
   // 宗旨 v18：scene/lang 可为空（点已选=取消）→ 展示与生成均回落默认档。
   const sceneLabel = SCENES.find((s) => s.id === (scene || DEFAULT_SCENE))?.label || "开发信";
@@ -226,7 +238,13 @@ ${customer.trim() ? `目标客户/公司：${customer.trim()}` : "目标客户�
     },
   ];
 
-  const canvas = <LibraryCanvas resultTabs={tabs} />;
+  const canvas = (
+    <LibraryCanvas
+      resultTabs={tabs}
+      active={canvasView}
+      onChange={setCanvasView}
+    />
+  );
 
   const schema: OpsSchema = {
     agentId: "bizdev.dev-letter",
@@ -264,6 +282,81 @@ ${customer.trim() ? `目标客户/公司：${customer.trim()}` : "目标客户�
     if (typeof s.result === "string") setResult(s.result);
   };
 
+  const getSessionSnapshot = useCallback(
+    (): Record<string, unknown> => ({
+      engine: "dev-letter",
+      customer,
+      product,
+      selling,
+      sellingTemplate,
+      scene,
+      lang,
+      result,
+      open,
+      canvasView,
+      error,
+      busy: false,
+    }),
+    [
+      customer,
+      product,
+      selling,
+      sellingTemplate,
+      scene,
+      lang,
+      result,
+      open,
+      canvasView,
+      error,
+    ],
+  );
+
+  const restoreSessionSnapshot = useCallback(
+    (snapshot: Record<string, unknown>) => {
+      if (
+        typeof snapshot.engine === "string" &&
+        snapshot.engine !== "dev-letter"
+      ) {
+        return;
+      }
+      const nextSelling =
+        typeof snapshot.selling === "string" ? snapshot.selling : "";
+      setCustomer(typeof snapshot.customer === "string" ? snapshot.customer : "");
+      setProduct(typeof snapshot.product === "string" ? snapshot.product : "");
+      setSelling(nextSelling);
+      setSellingTemplate(
+        restoredTemplate(snapshot.sellingTemplate, nextSelling),
+      );
+      setScene(
+        typeof snapshot.scene === "string" &&
+          (snapshot.scene === "" ||
+            SCENES.some((item) => item.id === snapshot.scene))
+          ? snapshot.scene
+          : DEFAULT_SCENE,
+      );
+      setLang(
+        typeof snapshot.lang === "string" &&
+          (snapshot.lang === "" || LANGS.includes(snapshot.lang))
+          ? snapshot.lang
+          : DEFAULT_LANG,
+      );
+      setResult(typeof snapshot.result === "string" ? snapshot.result : "");
+      setOpen(
+        snapshot.open === "target" ||
+          snapshot.open === "selling" ||
+          snapshot.open === "style" ||
+          snapshot.open === null
+          ? snapshot.open
+          : "selling",
+      );
+      setCanvasView(isCanvasView(snapshot.canvasView) ? snapshot.canvasView : "result");
+      setError(typeof snapshot.error === "string" ? snapshot.error : null);
+      setBusy(false);
+      setCopied(false);
+    },
+    [],
+  );
+
   // alignment §3-5：进/换成品 app 时重置本功能操作台（临时输入，安全清空）。
   const reset = () => {
     setOpen("selling");
@@ -274,9 +367,20 @@ ${customer.trim() ? `目标客户/公司：${customer.trim()}` : "目标客户�
     setScene("cold");
     setLang("英语");
     setResult("");
+    setCanvasView("result");
     setError(null);
     setCopied(false);
   };
 
-  return { ops, sticky, canvas, schema, getState, applyPatch, reset };
+  return {
+    ops,
+    sticky,
+    canvas,
+    schema,
+    getState,
+    applyPatch,
+    getSessionSnapshot,
+    restoreSessionSnapshot,
+    reset,
+  };
 }

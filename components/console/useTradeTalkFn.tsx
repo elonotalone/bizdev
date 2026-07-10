@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { StudioSection, CanvasEmpty, LeoComposer, OptionRow, type CanvasTab } from "@oceanleo/ui/shell";
 import { LibraryCanvas } from "./LibraryCanvas";
 import type { OpsPatch, OpsSchema } from "@oceanleo/ui/lib";
@@ -18,6 +18,15 @@ const TONES = ["商务正式", "友好亲切", "简洁直接"];
 const DEFAULT_TARGET = "英语";
 const DEFAULT_TONE = "商务正式";
 
+function restoredTemplate(value: unknown, input: string): string | null {
+  if (typeof value !== "string") return null;
+  return value.replace(/\n/g, " ") === input ? value : null;
+}
+
+function isCanvasView(value: unknown): value is "result" | "material" | "files" {
+  return value === "result" || value === "material" || value === "files";
+}
+
 // 外贸翻译功能区（新增 A 类）：外贸语境多语种互译 + 本地化（保留术语/商务礼仪/单位）。
 export function useTradeTalkFn(onNeedAuth: () => void): {
   ops: React.ReactNode;
@@ -26,6 +35,8 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
   schema: OpsSchema;
   getState: () => Record<string, unknown>;
   applyPatch: (patch: OpsPatch) => void;
+  getSessionSnapshot: () => Record<string, unknown>;
+  restoreSessionSnapshot: (snapshot: Record<string, unknown>) => void;
   reset: () => void;
 } {
   const tt = useUI();
@@ -43,6 +54,7 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [canvasView, setCanvasView] = useState("result");
 
   const translate = async () => {
     setError(null);
@@ -205,7 +217,13 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
     },
   ];
 
-  const canvas = <LibraryCanvas resultTabs={tabs} />;
+  const canvas = (
+    <LibraryCanvas
+      resultTabs={tabs}
+      active={canvasView}
+      onChange={setCanvasView}
+    />
+  );
 
   const schema: OpsSchema = {
     agentId: "bizdev.trade-talk",
@@ -241,6 +259,74 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
     if (typeof s.result === "string") setResult(s.result);
   };
 
+  const getSessionSnapshot = useCallback(
+    (): Record<string, unknown> => ({
+      engine: "trade-talk",
+      source,
+      sourceTemplate,
+      target,
+      tone,
+      terms,
+      result,
+      open,
+      canvasView,
+      error,
+      busy: false,
+    }),
+    [
+      source,
+      sourceTemplate,
+      target,
+      tone,
+      terms,
+      result,
+      open,
+      canvasView,
+      error,
+    ],
+  );
+
+  const restoreSessionSnapshot = useCallback(
+    (snapshot: Record<string, unknown>) => {
+      if (
+        typeof snapshot.engine === "string" &&
+        snapshot.engine !== "trade-talk"
+      ) {
+        return;
+      }
+      const nextSource =
+        typeof snapshot.source === "string" ? snapshot.source : "";
+      setSource(nextSource);
+      setSourceTemplate(restoredTemplate(snapshot.sourceTemplate, nextSource));
+      setTarget(
+        typeof snapshot.target === "string" &&
+          (snapshot.target === "" || LANGS.includes(snapshot.target))
+          ? snapshot.target
+          : DEFAULT_TARGET,
+      );
+      setTone(
+        typeof snapshot.tone === "string" &&
+          (snapshot.tone === "" || TONES.includes(snapshot.tone))
+          ? snapshot.tone
+          : DEFAULT_TONE,
+      );
+      setTerms(typeof snapshot.terms === "string" ? snapshot.terms : "");
+      setResult(typeof snapshot.result === "string" ? snapshot.result : "");
+      setOpen(
+        snapshot.open === "text" ||
+          snapshot.open === "opts" ||
+          snapshot.open === null
+          ? snapshot.open
+          : "text",
+      );
+      setCanvasView(isCanvasView(snapshot.canvasView) ? snapshot.canvasView : "result");
+      setError(typeof snapshot.error === "string" ? snapshot.error : null);
+      setBusy(false);
+      setCopied(false);
+    },
+    [],
+  );
+
   // alignment §3-5：进/换成品 app 时重置本功能操作台（临时输入，安全清空）。
   const reset = () => {
     setOpen("text");
@@ -249,9 +335,20 @@ export function useTradeTalkFn(onNeedAuth: () => void): {
     setTone("商务正式");
     setTerms("");
     setResult("");
+    setCanvasView("result");
     setError(null);
     setCopied(false);
   };
 
-  return { ops, sticky, canvas, schema, getState, applyPatch, reset };
+  return {
+    ops,
+    sticky,
+    canvas,
+    schema,
+    getState,
+    applyPatch,
+    getSessionSnapshot,
+    restoreSessionSnapshot,
+    reset,
+  };
 }

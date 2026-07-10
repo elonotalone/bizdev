@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   StudioSection,
   ResultCanvas,
@@ -35,6 +35,22 @@ const ROLE_PRESETS = [
 // 旧版的「全网检索 / 文件库 RAG / 客户大师」依赖 trade-engine + Twenty 表，本轮 deferred。
 const DEFAULT_ROLE = ROLE_PRESETS[0];
 
+function restoredTemplate(value: unknown, input: string): string | null {
+  if (typeof value !== "string") return null;
+  return value.replace(/\n/g, " ") === input ? value : null;
+}
+
+function isCanvasView(
+  value: unknown,
+): value is "reply" | "understanding" | "material" | "files" {
+  return (
+    value === "reply" ||
+    value === "understanding" ||
+    value === "material" ||
+    value === "files"
+  );
+}
+
 export function useReplyFn(onNeedAuth: () => void): {
   ops: React.ReactNode;
   sticky: React.ReactNode;
@@ -42,6 +58,8 @@ export function useReplyFn(onNeedAuth: () => void): {
   schema: OpsSchema;
   getState: () => Record<string, unknown>;
   applyPatch: (patch: OpsPatch) => void;
+  getSessionSnapshot: () => Record<string, unknown>;
+  restoreSessionSnapshot: (snapshot: Record<string, unknown>) => void;
   reset: () => void;
 } {
   const tt = useUI();
@@ -416,6 +434,86 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
     if (typeof s.reply === "string") setReply(s.reply);
   };
 
+  const getSessionSnapshot = useCallback(
+    (): Record<string, unknown> => ({
+      engine: "reply",
+      customerMsg,
+      customerMsgTemplate,
+      answerIdea,
+      role,
+      replyType,
+      understanding,
+      reply,
+      refine,
+      open,
+      canvasView: activeTab,
+      error,
+      busy: false,
+      busyKind: null,
+    }),
+    [
+      customerMsg,
+      customerMsgTemplate,
+      answerIdea,
+      role,
+      replyType,
+      understanding,
+      reply,
+      refine,
+      open,
+      activeTab,
+      error,
+    ],
+  );
+
+  const restoreSessionSnapshot = useCallback(
+    (snapshot: Record<string, unknown>) => {
+      if (typeof snapshot.engine === "string" && snapshot.engine !== "reply") {
+        return;
+      }
+      const nextCustomerMsg =
+        typeof snapshot.customerMsg === "string" ? snapshot.customerMsg : "";
+      setCustomerMsg(nextCustomerMsg);
+      setCustomerMsgTemplate(
+        restoredTemplate(snapshot.customerMsgTemplate, nextCustomerMsg),
+      );
+      setAnswerIdea(
+        typeof snapshot.answerIdea === "string" ? snapshot.answerIdea : "",
+      );
+      setRole(
+        typeof snapshot.role === "string" && ROLE_PRESETS.includes(snapshot.role)
+          ? snapshot.role
+          : DEFAULT_ROLE,
+      );
+      setReplyType(
+        snapshot.replyType === "email" || snapshot.replyType === "whatsapp"
+          ? snapshot.replyType
+          : "email",
+      );
+      setUnderstanding(
+        typeof snapshot.understanding === "string" ? snapshot.understanding : "",
+      );
+      setReply(typeof snapshot.reply === "string" ? snapshot.reply : "");
+      setRefine(typeof snapshot.refine === "string" ? snapshot.refine : "");
+      setOpen(
+        snapshot.open === "customer" ||
+          snapshot.open === "idea" ||
+          snapshot.open === "tone" ||
+          snapshot.open === null
+          ? snapshot.open
+          : "customer",
+      );
+      setActiveTab(
+        isCanvasView(snapshot.canvasView) ? snapshot.canvasView : "reply",
+      );
+      setError(typeof snapshot.error === "string" ? snapshot.error : null);
+      setBusy(false);
+      setBusyKind(null);
+      setCopied(false);
+    },
+    [],
+  );
+
   // alignment §3-5：进/换成品 app 时把本功能操作台重置回干净「输入」态（全是临时生成输入，
   // 非持久化文档，安全清空）。修「进 A 填了内容 → 换到 B 仍显示 A」。
   const reset = () => {
@@ -433,5 +531,15 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
     setCopied(false);
   };
 
-  return { ops, sticky, canvas, schema, getState, applyPatch, reset };
+  return {
+    ops,
+    sticky,
+    canvas,
+    schema,
+    getState,
+    applyPatch,
+    getSessionSnapshot,
+    restoreSessionSnapshot,
+    reset,
+  };
 }
