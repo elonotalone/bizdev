@@ -2,6 +2,7 @@
 
 import { GATEWAY_BASE, SITE_ID } from "./gateway";
 import { accessToken } from "./oceanleo-auth";
+import { withOperatorRemarkRequest } from "@oceanleo/ui/lib";
 
 // Thin chat client against the unified gateway. All AI features on this site
 // (智能回复 / 公司调研 / 竞品分析 / 开发信 / 外贸翻译) go through /v1/chat with
@@ -34,7 +35,7 @@ export async function aiChat(input: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({
+      body: JSON.stringify(withOperatorRemarkRequest({
         site_id: SITE_ID,
         provider: "bailian",
         key_mode: "platform",
@@ -42,7 +43,7 @@ export async function aiChat(input: {
         messages: input.messages,
         max_tokens: input.max_tokens ?? 2000,
         temperature: input.temperature,
-      }),
+      })),
     });
   } catch {
     throw new AiError(0, "网络错误：无法连接 AI 网关。");

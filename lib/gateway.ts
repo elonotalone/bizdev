@@ -1,6 +1,7 @@
 "use client";
 
 import { getSupabase } from "./supabase";
+import { withOperatorRemarkRequest } from "@oceanleo/ui/lib";
 
 // Base URL of the unified OceanLeo AI gateway. Overridable via env for local dev.
 export const GATEWAY_BASE =
@@ -23,7 +24,7 @@ export async function gatewayPost<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${GATEWAY_BASE}${path}`, {
     method: "POST",
     headers: { ...headers, "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify(withOperatorRemarkRequest(body)),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
