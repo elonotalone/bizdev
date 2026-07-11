@@ -17,7 +17,7 @@
 //   「近 30 天请求」，前两格与主站同文案同位置，布局像素级一致。
 //
 // 2026-06-14：余额改为人民币 token 余额（不再是「积分」），消耗改为 ¥。
-// 「密钥管理」入口去掉（BYOK 已移除），新增「API」入口（模型选择 + 标价）。
+// 「密钥管理」入口去掉（BYOK 已移除），新增「AI 模型」入口（模型选择 + 标价）。
 // ============================================================================
 
 import Link from "next/link";
@@ -41,7 +41,7 @@ const MENU_ITEMS = [
     external: false,
   },
   {
-    label: "API",
+    label: "AI 模型",
     href: "/api",
     desc: "选择模型、查看价格与 token 余额",
     external: false,
@@ -84,7 +84,7 @@ function IconChevronRight({ className = "" }: { className?: string }) {
 export function AccountCenter() {
   const tt = useUI();
   const [user, setUser] = useState<User | null>(null);
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(() => !oceanleoConfigured());
   const [balanceYuan, setBalanceYuan] = useState<number | null>(null);
   const [monthSpendYuan, setMonthSpendYuan] = useState<number | null>(null);
   const [requests, setRequests] = useState<number | null>(null);

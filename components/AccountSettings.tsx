@@ -21,7 +21,7 @@ import { browserClient, oceanleoConfigured } from "@/lib/oceanleo-auth";
 export function AccountSettings() {
   const tt = useUI();
   const [user, setUser] = useState<User | null>(null);
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(() => !oceanleoConfigured());
 
   useEffect(() => {
     const c = browserClient();
@@ -94,11 +94,11 @@ export function AccountSettings() {
           </div>
         </section>
 
-        {/* 用量记录 2026-07-02 起独立成「Cost」页（settings / api 均不再内嵌明细）。 */}
+        {/* 用量记录 2026-07-02 起独立成「Cost」页（设置 / AI 模型均不再内嵌明细）。 */}
         <section className="v-fade-up" style={{ animationDelay: "120ms" }}>
           <h2 className="mb-1 text-[14px] font-semibold text-neutral-900">{tt("用量记录与计费")}</h2>
           <p className="mb-3 text-[12px] leading-relaxed text-neutral-500">
-            {tt("用量柱状图与每次调用的真实计费记录（模型 / token / 费用，OceanLeo 不加价）在「Cost」页；token 余额与模型选择在「API」页。")}
+            {tt("用量柱状图与每次调用的真实计费记录（模型 / token / 费用，OceanLeo 不加价）在「Cost」页；token 余额与模型选择在「AI 模型」页。")}
           </p>
           <div className="flex gap-2">
             <a
@@ -111,7 +111,7 @@ export function AccountSettings() {
               href="/api"
               className="inline-flex items-center rounded-lg border border-neutral-200 px-4 py-2 text-[13px] font-medium text-neutral-700 transition hover:bg-neutral-50"
             >
-              {tt("前往 API 页 →")}
+              {tt("前往 AI 模型页 →")}
             </a>
           </div>
         </section>
