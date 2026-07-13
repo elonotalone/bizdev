@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@oceanleo/ui':
-        specifier: github:elonotalone/oceanleo-ui#v0.149.1
-        version: https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/e638e8f9a584a0c1c0749fdb8916abf721e599f0(@floating-ui/dom@1.7.6)(@supabase/ssr@0.10.3(@supabase/supabase-js@2.108.2))(@supabase/supabase-js@2.108.2)(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(next-intl@4.13.0(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(three@0.183.2)
+        specifier: github:elonotalone/oceanleo-ui#v0.149.2
+        version: https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/96170841e0734f2738b7c60c7dedd67ba290ef4c(@floating-ui/dom@1.7.6)(@supabase/ssr@0.10.3(@supabase/supabase-js@2.108.2))(@supabase/supabase-js@2.108.2)(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(next-intl@4.13.0(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(three@0.183.2)
       '@supabase/ssr':
         specifier: ^0.10.3
         version: 0.10.3(@supabase/supabase-js@2.108.2)
@@ -485,9 +485,9 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
-  '@oceanleo/ui@https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/e638e8f9a584a0c1c0749fdb8916abf721e599f0':
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/e638e8f9a584a0c1c0749fdb8916abf721e599f0}
-    version: 0.149.1
+  '@oceanleo/ui@https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/96170841e0734f2738b7c60c7dedd67ba290ef4c':
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/96170841e0734f2738b7c60c7dedd67ba290ef4c}
+    version: 0.149.2
     peerDependencies:
       '@supabase/ssr': '>=0.5.0'
       '@supabase/supabase-js': '>=2.45.0'
@@ -3293,7 +3293,7 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@oceanleo/ui@https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/e638e8f9a584a0c1c0749fdb8916abf721e599f0(@floating-ui/dom@1.7.6)(@supabase/ssr@0.10.3(@supabase/supabase-js@2.108.2))(@supabase/supabase-js@2.108.2)(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(next-intl@4.13.0(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(three@0.183.2)':
+  '@oceanleo/ui@https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/96170841e0734f2738b7c60c7dedd67ba290ef4c(@floating-ui/dom@1.7.6)(@supabase/ssr@0.10.3(@supabase/supabase-js@2.108.2))(@supabase/supabase-js@2.108.2)(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(next-intl@4.13.0(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(three@0.183.2)':
     dependencies:
       '@google/model-viewer': 4.3.1(three@0.183.2)
       '@supabase/ssr': 0.10.3(@supabase/supabase-js@2.108.2)
