@@ -3,16 +3,14 @@
 import { useCallback, useState } from "react";
 import {
   StudioSection,
-  ResultCanvas,
   CanvasEmpty,
   Markdown,
-  MaterialLibrary,
   ArtifactLibrary,
   LeoComposer,
   OptionRow,
   type CanvasTab,
 } from "@oceanleo/ui/shell";
-import { MATERIALS } from "@/lib/materials";
+import { ContextResultCanvas } from "@/components/ArtifactContextCanvas";
 import type { OpsPatch, OpsSchema } from "@oceanleo/ui/lib";
 import { useUI } from "@oceanleo/ui/i18n";
 import { aiChat, AiError } from "@/lib/ai";
@@ -383,12 +381,19 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
     {
       id: "material",
       label: tt("素材库"),
-      content: <MaterialLibrary materials={MATERIALS} accent={ACCENT} />,
+      content: null,
     },
     { id: "files", label: tt("文件库"), content: <ArtifactLibrary accent={ACCENT} fill /> },
   ];
 
-  const canvas = <ResultCanvas tabs={tabs} active={activeTab} onChange={setActiveTab} accent={ACCENT} />;
+  const canvas = (
+    <ContextResultCanvas
+      tabs={tabs}
+      active={activeTab}
+      onChange={setActiveTab}
+      accent={ACCENT}
+    />
+  );
 
   const schema: OpsSchema = {
     agentId: "bizdev.reply",

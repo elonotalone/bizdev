@@ -11,12 +11,10 @@
 
 import { useState } from "react";
 import {
-  ResultCanvas,
-  MaterialLibrary,
   ArtifactLibrary,
   type CanvasTab,
 } from "@oceanleo/ui/shell";
-import { MATERIALS } from "@/lib/materials";
+import { ContextResultCanvas } from "@/components/ArtifactContextCanvas";
 
 const ACCENT = "#0e7490";
 
@@ -39,9 +37,16 @@ export function LibraryCanvas({
     {
       id: "material",
       label: "素材库",
-      content: <MaterialLibrary materials={MATERIALS} accent={accent} />,
+      content: null,
     },
     { id: "files", label: "文件库", content: <ArtifactLibrary accent={accent} fill /> },
   ];
-  return <ResultCanvas tabs={tabs} active={view} onChange={setView} accent={accent} />;
+  return (
+    <ContextResultCanvas
+      tabs={tabs}
+      active={view}
+      onChange={setView}
+      accent={accent}
+    />
+  );
 }

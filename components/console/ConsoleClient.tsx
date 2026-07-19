@@ -29,6 +29,8 @@ import { useCompetitionFn } from "./useCompetitionFn";
 import { useDevLetterFn } from "./useDevLetterFn";
 import { useTradeTalkFn } from "./useTradeTalkFn";
 import { BIZDEV_APPS, type BizdevApp, type BizdevEngine } from "@/lib/app-catalog";
+import { ArtifactAppProvider } from "@/components/ArtifactContextCanvas";
+import { generationContextMetadata } from "@/lib/artifact-contexts";
 
 const ACCENT = "#0e7490";
 const SITE_ID = "bizdev";
@@ -108,6 +110,7 @@ export default function ConsoleClient() {
     (app: GoalApp) => {
       const eng = (app as BizdevApp).engine;
       const bind = bindOf(eng);
+      const artifactContext = generationContextMetadata(app.id);
       return (
         <FunctionAgentChat
           agentId={`${SITE_ID}.${eng}`}
@@ -116,9 +119,15 @@ export default function ConsoleClient() {
           accent={ACCENT}
           opsContent={bind.ops}
           stickyAction={bind.sticky}
-          getOpsState={bind.getState}
+          getOpsState={() => ({
+            ...bind.getState(),
+            artifactContext,
+          })}
           onApplyPatch={bind.applyPatch}
-          getSessionSnapshot={bind.getSessionSnapshot}
+          getSessionSnapshot={() => ({
+            ...bind.getSessionSnapshot(),
+            artifactContext,
+          })}
           onRestoreSessionSnapshot={bind.restoreSessionSnapshot}
           sessionSchemaVersion={SESSION_SCHEMA_VERSION}
           opsPrimaryField={PRIMARY[eng]}
@@ -129,7 +138,11 @@ export default function ConsoleClient() {
   );
 
   const renderCanvas = useCallback(
-    (app: GoalApp) => bindOf((app as BizdevApp).engine).canvas,
+    (app: GoalApp) => (
+      <ArtifactAppProvider appId={app.id}>
+        {bindOf((app as BizdevApp).engine).canvas}
+      </ArtifactAppProvider>
+    ),
     [bindOf],
   );
 

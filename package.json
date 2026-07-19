@@ -6,10 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs",
+    "test:artifact-context": "node --experimental-strip-types --test tests/artifact-contexts.test.mjs tests/artifact-surfaces.rendered.test.mjs",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@oceanleo/ui": "github:elonotalone/oceanleo-ui#v0.178.0",
+    "@oceanleo/ui": "github:elonotalone/oceanleo-ui#v0.180.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.2",
     "next": "16.2.6",
