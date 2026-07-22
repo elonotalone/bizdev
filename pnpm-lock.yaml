@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@oceanleo/ui':
-        specifier: github:elonotalone/oceanleo-ui#v0.185.1
-        version: https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/dcb99e0b8ed276f2e4b382a61acecd604e11158f(@floating-ui/dom@1.7.6)(@supabase/ssr@0.10.3(@supabase/supabase-js@2.108.2))(@supabase/supabase-js@2.108.2)(@tiptap/extensions@3.27.3(@tiptap/core@3.27.3(@tiptap/pm@3.27.3))(@tiptap/pm@3.27.3))(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(next-intl@4.13.0(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(xlsx@https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz)
+        specifier: github:elonotalone/oceanleo-ui#v0.187.0
+        version: https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/72732a08be01aa5b73482902ba29fbfb969d2a90(@floating-ui/dom@1.7.6)(@supabase/ssr@0.10.3(@supabase/supabase-js@2.108.2))(@supabase/supabase-js@2.108.2)(@tiptap/extensions@3.27.3(@tiptap/core@3.27.3(@tiptap/pm@3.27.3))(@tiptap/pm@3.27.3))(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(next-intl@4.13.0(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(xlsx@https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz)
       '@supabase/ssr':
         specifier: ^0.10.3
         version: 0.10.3(@supabase/supabase-js@2.108.2)
@@ -576,9 +576,9 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
-  '@oceanleo/ui@https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/dcb99e0b8ed276f2e4b382a61acecd604e11158f':
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/dcb99e0b8ed276f2e4b382a61acecd604e11158f}
-    version: 0.185.1
+  '@oceanleo/ui@https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/72732a08be01aa5b73482902ba29fbfb969d2a90':
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/72732a08be01aa5b73482902ba29fbfb969d2a90}
+    version: 0.187.0
     peerDependencies:
       '@supabase/ssr': '>=0.5.0'
       '@supabase/supabase-js': '>=2.45.0'
@@ -4218,7 +4218,7 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@oceanleo/ui@https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/dcb99e0b8ed276f2e4b382a61acecd604e11158f(@floating-ui/dom@1.7.6)(@supabase/ssr@0.10.3(@supabase/supabase-js@2.108.2))(@supabase/supabase-js@2.108.2)(@tiptap/extensions@3.27.3(@tiptap/core@3.27.3(@tiptap/pm@3.27.3))(@tiptap/pm@3.27.3))(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(next-intl@4.13.0(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(xlsx@https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz)':
+  '@oceanleo/ui@https://codeload.github.com/elonotalone/oceanleo-ui/tar.gz/72732a08be01aa5b73482902ba29fbfb969d2a90(@floating-ui/dom@1.7.6)(@supabase/ssr@0.10.3(@supabase/supabase-js@2.108.2))(@supabase/supabase-js@2.108.2)(@tiptap/extensions@3.27.3(@tiptap/core@3.27.3(@tiptap/pm@3.27.3))(@tiptap/pm@3.27.3))(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(next-intl@4.13.0(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(xlsx@https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz)':
     dependencies:
       '@google/model-viewer': 4.3.1(three@0.183.2)
       '@supabase/ssr': 0.10.3(@supabase/supabase-js@2.108.2)
