@@ -5,7 +5,6 @@ import {
   StudioSection,
   CanvasEmpty,
   Markdown,
-  ArtifactLibrary,
   LeoComposer,
   OptionRow,
   type CanvasTab,
@@ -381,9 +380,15 @@ ${answerIdea.trim() ? `我的回答思路：\n${answerIdea.trim()}\n` : ""}
     {
       id: "material",
       label: tt("素材库"),
+      surface: { slot: "materials", role: "container" },
       content: null,
     },
-    { id: "files", label: tt("文件库"), content: <ArtifactLibrary accent={ACCENT} fill /> },
+    {
+      id: "files",
+      label: tt("文件库"),
+      surface: { slot: "mine", role: "container" },
+      content: null,
+    },
   ];
 
   const canvas = (

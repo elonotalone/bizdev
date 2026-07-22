@@ -8,17 +8,12 @@ import {
 } from "react";
 import {
   ResultCanvas,
-  artifactHasExactContext,
-  normalizeArtifact,
-  normalizeArtifactProjection,
   type ArtifactContextRef,
-  type MaterialItem,
   type ResultCanvasProps,
 } from "@oceanleo/ui/shell";
 import {
   SITE_KEY,
   artifactContextFor,
-  fixtureRecordsForContext,
 } from "@/lib/artifact-contexts";
 
 const ArtifactAppContext = createContext<string | null>(null);
@@ -46,44 +41,6 @@ function contextRefFor(appId: string): ArtifactContextRef {
   };
 }
 
-function materialsForApp(appId: string): MaterialItem[] {
-  const context = artifactContextFor(appId);
-  const request = {
-    siteKey: SITE_KEY,
-    appId,
-    functionId: null,
-    contextId: context.contextId,
-  };
-  return fixtureRecordsForContext(request).flatMap((record) => {
-    const artifact = normalizeArtifactProjection(record.projection);
-    if (
-      !artifact ||
-      !artifact.integrity.ok ||
-      !artifactHasExactContext(artifact, context.contextId) ||
-      !context.requiredPrimaryTypes.includes(artifact.artifactType)
-    ) {
-      return [];
-    }
-    const item = normalizeArtifact({
-      id: artifact.artifactId,
-      title: artifact.title,
-      artifact,
-    });
-    return [
-      {
-        id: artifact.artifactId,
-        title: artifact.title,
-        thumb: item.thumbUrl || item.previewUrl || "",
-        preview: item.previewUrl,
-        categories: [artifact.artifactType],
-        desc: `${artifact.artifactType} · ${artifact.revisionId}`,
-        kind: "image" as const,
-        libraryItem: item,
-      },
-    ];
-  });
-}
-
 function useArtifactAppId(explicitAppId?: string): string {
   const inheritedAppId = useContext(ArtifactAppContext);
   const appId = explicitAppId || inheritedAppId;
@@ -103,12 +60,10 @@ export function ContextResultCanvas({
 }) {
   const appId = useArtifactAppId(explicitAppId);
   const context = useMemo(() => contextRefFor(appId), [appId]);
-  const materials = useMemo(() => materialsForApp(appId), [appId]);
   return (
     <ResultCanvas
       {...props}
       siteId={SITE_KEY}
-      materials={materials}
       materialContext={context}
     />
   );
