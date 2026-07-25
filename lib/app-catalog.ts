@@ -14,6 +14,10 @@
 // ============================================================================
 
 import { type GoalApp, type GuideSection } from "@oceanleo/ui/shell";
+import { assetThumbUrl } from "@oceanleo/ui/lib";
+
+/** 卡面封面图：`cover-app/bizdev-<appId>`（W5 流水线产出，逐条 GET 200 实证）。 */
+const cover = (appId: string): string => assetThumbUrl(`cover-app/bizdev-${appId}`);
 
 // 五大引擎与各自的操作台「主自由文本字段」（灌预置 / 填模板用）。
 export type BizdevEngine = "reply" | "research" | "competition" | "dev-letter" | "trade-talk";
@@ -72,6 +76,7 @@ function app(
     capabilities: tagline,
     engine,
     scenes,
+    thumb: cover(id),
     // 宗旨 v19（操作员 2026-07-08）：点导航卡片 = 操作台【完整】回填，含选择框（OptionRow）。
     // 三个引擎的操作台各有 OptionRow，且其 applyPatch 已支持对应 set.<field>；这里按引擎补默认档，
     // withGuideDefaults 会并进每张导航卡 → 点任意卡片这些 OptionRow 都被选中（而非只填正文）。

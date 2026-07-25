@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { HomeIntro, AgentChat, type AgentAttachment } from "@oceanleo/ui/shell";
+import { BIZDEV_APPS } from "@/lib/app-catalog";
 
-// bizdev.oceanleo.com —— 「首页」（2026-06-19 宗旨）。介绍 + 大输入框；提交后就地进入
+// bizdev.oceanleo.com —— 「首页」（2026-06-19 宗旨）。app 卡片 + 大输入框；提交后就地进入
 // 对话型 agent。固定操控（智能回复 / 公司调研 / 竞品分析 / 开发信 / 外贸翻译）在左侧
 // 「工作台」。
 
@@ -20,7 +21,8 @@ export default function Home() {
           siteId="bizdev"
           siteName="LeoBizDev"
           accent={ACCENT}
-          intro="LeoBizDev 是 OceanLeo 的外贸/出海 AI 工作台：把客户邮件读懂并写出专业回复、对目标公司做商业画像调研、对竞品做差异化对比、写有针对性的外贸开发信、做外贸语境的翻译与本地化。直接说出你的外贸场景，agent 会帮你完成；想用规范化操作台逐区填写，去左侧「工作台」。"
+          apps={BIZDEV_APPS}
+          featuredLimit={12}
           suggestions={[
             "帮我读懂这封客户询盘并写一封专业的英文回复",
             "根据这段公司资料，给我一份目标客户的调研报告与合作切入点",
