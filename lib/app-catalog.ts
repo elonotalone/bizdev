@@ -19,6 +19,68 @@ import { type GoalApp, type GuideSection } from "@oceanleo/ui/shell";
 // 存 OSS key，不存整条 URL；渲染层用 @oceanleo/ui 的 capabilityImageThumbSrc()。
 const capImage = (appId: string): string => `cap-app/bizdev-${appId}`;
 
+// 模板素材：W6 流水线产出（tpl-material/bizdev-<appId>-<n>），预览逐条 GET 200 实证。
+// previewUrl 存 OSS key；artifactId 是「编辑模板」载入的正式产物对象（owner=platform，仅授权 export）。
+const TEMPLATES: Record<string, { id: string; title: string; summary: string; tags: string[]; previewUrl: string; artifactId: string; artifactType: "document" }[]> = {
+  "inquiry-reply": [
+    { id: "bizdev-inquiry-reply-1", title: "询盘回复成品样例（首封）", summary: "一封可直接发出的询盘首复：24 小时内确认、按客户问题逐条作答、附三档报价前提与下一步，换产品与客户名即可复用。", tags: ["询盘回复","首复","外贸邮件"], previewUrl: "tpl-material/bizdev-inquiry-reply-1", artifactId: "892e7590-7a70-440c-a616-be3c49731eb4", artifactType: "document" },
+  ],
+  "complaint-reply": [
+    { id: "bizdev-complaint-reply-1", title: "客诉处理回复成品样例", summary: "一封稳住客户的客诉回复：先致歉与承担、再给事实与原因、然后给补救三选项与时间表，避免推诿与空承诺。", tags: ["客诉","补救方案","外贸邮件"], previewUrl: "tpl-material/bizdev-complaint-reply-1", artifactId: "47d4bcf0-e5ff-4cce-849e-3fb7aa292bcf", artifactType: "document" },
+  ],
+  "whatsapp-reply": [
+    { id: "bizdev-whatsapp-reply-1", title: "WhatsApp 快回话术成品样例", summary: "一组即时消息场景的短回复模板：询价、催单、砍价、样品、失联五类，每条都口语、简短、带明确下一步。", tags: ["WhatsApp","短回复","话术"], previewUrl: "tpl-material/bizdev-whatsapp-reply-1", artifactId: "5c2aefd3-30cf-4812-b300-8bc031d2cd8a", artifactType: "document" },
+  ],
+  "negotiation-reply": [
+    { id: "bizdev-negotiation-reply-1", title: "议价谈判回复成品样例", summary: "一封守住利润的议价回信：不直接降价、用条件交换、给三档结构化报价并设有效期，附让步顺序与底线备忘。", tags: ["议价","谈判","报价结构"], previewUrl: "tpl-material/bizdev-negotiation-reply-1", artifactId: "a47621da-ea7c-4028-a302-6f58405c3cf2", artifactType: "document" },
+  ],
+  "cold-email": [
+    { id: "bizdev-cold-email-1", title: "开发信成品样例（首触）", summary: "一封高回复率的开发信：只讲一个与对方相关的具体点、不群发口吻、给一个极低门槛的下一步，附主题行备选与跟进节奏。", tags: ["开发信","首触","高回复"], previewUrl: "tpl-material/bizdev-cold-email-1", artifactId: "2e8e9bd3-5d1e-464e-b234-3c54ea70d3ac", artifactType: "document" },
+  ],
+  "reactivate-email": [
+    { id: "bizdev-reactivate-email-1", title: "唤醒沉睡客户成品样例", summary: "一封让老客户愿意回信的唤醒信：先承认断联、给出对方离开后的真实变化、只提一个具体理由，附三种客户状态的分支写法。", tags: ["唤醒","老客户","复购"], previewUrl: "tpl-material/bizdev-reactivate-email-1", artifactId: "0a97a08f-45ff-4d9f-9fb7-7ab0809737af", artifactType: "document" },
+  ],
+  "exhibition-invite": [
+    { id: "bizdev-exhibition-invite-1", title: "展会邀请函成品样例", summary: "一封能约到具体时段的展位邀约信：给出展位号与到达路线、明确现场能看到什么、附三个可选时段与随行准备清单。", tags: ["展会邀请","展位","约时段"], previewUrl: "tpl-material/bizdev-exhibition-invite-1", artifactId: "aadcb563-9db1-4b4d-b45e-4593205d05a2", artifactType: "document" },
+  ],
+  "product-intro-letter": [
+    { id: "bizdev-product-intro-letter-1", title: "产品推介信成品样例", summary: "一封面向采购决策人的产品推介：以对方的成本与风险开头、用三段说清差异、附规格摘要与试单方案，不堆砌参数。", tags: ["产品推介","差异化","试单"], previewUrl: "tpl-material/bizdev-product-intro-letter-1", artifactId: "7020a8e5-da7d-4e4f-9357-6897e6503737", artifactType: "document" },
+  ],
+  "company-research": [
+    { id: "bizdev-company-research-1", title: "客户公司调研报告成品样例", summary: "一份进销售会前必读的客户背景调研：主营与规模、采购组织与决策链、近期动向、切入点与风险，全部标注信息来源等级。", tags: ["客户调研","决策链","切入点"], previewUrl: "tpl-material/bizdev-company-research-1", artifactId: "8521cf5f-eaff-43c7-a676-5df0adb990a5", artifactType: "document" },
+  ],
+  "market-entry": [
+    { id: "bizdev-market-entry-1", title: "目标市场进入分析成品样例", summary: "一份支持去留决策的市场进入分析：需求判断、准入门槛、渠道结构、竞争格局、定价空间与分阶段进入建议。", tags: ["市场进入","准入","渠道"], previewUrl: "tpl-material/bizdev-market-entry-1", artifactId: "eff19fde-4545-4d82-93d8-5bc492d73543", artifactType: "document" },
+  ],
+  "customer-profile": [
+    { id: "bizdev-customer-profile-1", title: "客户画像与跟进策略成品样例", summary: "一份把线索变成打法的客户画像：企业属性、采购动机、决策角色、异议预判与分阶段跟进动作，附资格判定门槛。", tags: ["客户画像","决策角色","跟进策略"], previewUrl: "tpl-material/bizdev-customer-profile-1", artifactId: "b104d146-1a36-41f6-b242-8fb410d13d02", artifactType: "document" },
+  ],
+  "competitor-report": [
+    { id: "bizdev-competitor-report-1", title: "竞品对比报告成品样例", summary: "一份能直接用于销售的竞品对比：先定对比维度与权重、再逐项事实对比、最后给差异化话术与不可比项说明。", tags: ["竞品对比","维度权重","话术"], previewUrl: "tpl-material/bizdev-competitor-report-1", artifactId: "3defcd21-270d-4457-9b32-2e5c27360028", artifactType: "document" },
+  ],
+  "selling-points": [
+    { id: "bizdev-selling-points-1", title: "差异化卖点提炼成品样例", summary: "一份把产品事实翻译成客户语言的卖点稿：三个核心卖点各配事实、证据与一句话说法，附不能说的表述清单。", tags: ["卖点提炼","证据","话术"], previewUrl: "tpl-material/bizdev-selling-points-1", artifactId: "07177956-6bf9-4282-81c2-464bcf573ba3", artifactType: "document" },
+  ],
+  "pricing-strategy": [
+    { id: "bizdev-pricing-strategy-1", title: "报价策略建议成品样例", summary: "一份指导实际报价的策略稿：成本结构、三档价格设计、让步顺序与底线、有效期与调价触发条件。", tags: ["报价策略","分档","让步顺序"], previewUrl: "tpl-material/bizdev-pricing-strategy-1", artifactId: "d8854990-3162-4da2-977c-1bb5a57945a3", artifactType: "document" },
+  ],
+  "trade-translate": [
+    { id: "bizdev-trade-translate-1", title: "外贸函电双语对照成品样例", summary: "一份可直接套用的中英对照函电集：确认订单、通知延期、催款、索赔四类，附术语统一表与常见误译提示。", tags: ["外贸函电","双语","术语"], previewUrl: "tpl-material/bizdev-trade-translate-1", artifactId: "8e86414d-f46f-4892-8846-87d223d00836", artifactType: "document" },
+  ],
+  "term-localize": [
+    { id: "bizdev-term-localize-1", title: "行业术语本地化对照表成品样例", summary: "一份可交给译者与客服共用的术语表：中文、英文、目标市场惯用说法、使用场景与禁用译法，附维护规则。", tags: ["术语表","本地化","禁用译法"], previewUrl: "tpl-material/bizdev-term-localize-1", artifactId: "ce0bb532-8434-449b-85de-f9b36d8422b6", artifactType: "document" },
+  ],
+  "multilang-notice": [
+    { id: "bizdev-multilang-notice-1", title: "多语通知函成品样例（价格调整）", summary: "一份三语并列的正式通告：中英双语正文加要点摘要，说明原因、生效日、过渡安排与联系人，语气克制不道歉过度。", tags: ["通知函","多语","价格调整"], previewUrl: "tpl-material/bizdev-multilang-notice-1", artifactId: "255225b6-ab14-43a9-83db-8ef05d6a73b4", artifactType: "document" },
+  ],
+  "follow-up": [
+    { id: "bizdev-follow-up-1", title: "报价跟进信成品样例（四封节奏）", summary: "报价后无回音的完整跟进序列：四封信各换一个角度、逐步降低门槛、最后一封明确收尾，附发送节奏与停止规则。", tags: ["报价跟进","序列","收尾"], previewUrl: "tpl-material/bizdev-follow-up-1", artifactId: "c8d7844c-1265-4477-82cb-e8ce99aae548", artifactType: "document" },
+  ],
+  "order-confirm-reply": [
+    { id: "bizdev-order-confirm-reply-1", title: "订单确认回复成品样例", summary: "一封让客户放心的订单确认：逐项复述关键条款、给出时间表与责任人、列出需客户确认的事项与风险提示。", tags: ["订单确认","条款复述","时间表"], previewUrl: "tpl-material/bizdev-order-confirm-reply-1", artifactId: "c728c131-8de2-4a28-a922-6ff5469de3bd", artifactType: "document" },
+  ],
+};
+
 // 五大引擎与各自的操作台「主自由文本字段」（灌预置 / 填模板用）。
 export type BizdevEngine = "reply" | "research" | "competition" | "dev-letter" | "trade-talk";
 
@@ -77,6 +139,7 @@ function app(
     engine,
     scenes,
     capabilityImage: capImage(id),
+    ...(TEMPLATES[id] ? { templates: TEMPLATES[id] } : {}),
     // 宗旨 v19（操作员 2026-07-08）：点导航卡片 = 操作台【完整】回填，含选择框（OptionRow）。
     // 三个引擎的操作台各有 OptionRow，且其 applyPatch 已支持对应 set.<field>；这里按引擎补默认档，
     // withGuideDefaults 会并进每张导航卡 → 点任意卡片这些 OptionRow 都被选中（而非只填正文）。
