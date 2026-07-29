@@ -22,7 +22,7 @@ import {
 } from "@oceanleo/ui/shell";
 import type { OpsPatch, OpsSchema } from "@oceanleo/ui/lib";
 import { useUI } from "@oceanleo/ui/i18n";
-import { AuthModal } from "@/components/AuthModal";
+import { AuthDialog } from "@oceanleo/ui/pages";
 import { useReplyFn } from "./useReplyFn";
 import { useResearchFn } from "./useResearchFn";
 import { useCompetitionFn } from "./useCompetitionFn";
@@ -174,7 +174,12 @@ export default function ConsoleClient() {
         embed={embed}
         solo={solo}
       />
-      {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
+      {authOpen && (
+        <AuthDialog
+          onClose={() => setAuthOpen(false)}
+          onSuccess={() => setAuthOpen(false)}
+        />
+      )}
     </>
   );
 }
