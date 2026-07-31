@@ -142,6 +142,101 @@ test("挂起类型恰为 interactive_doc,可落地类型含 chart 与 grid", asy
   }
 });
 
+// L4 §3.1 / §3.2 的两张四列表,逐格转录自规格(族 / 份数 / 货架位次)。
+// 这一份不是「plan 的第二份拷贝」而是规格侧的对照物:簇表里的
+// 「↑ 同簇全部 N 个 app」在 plan 里必须真展开,抽样或漏行都要被这条测出来。
+const LETTER_CLUSTER_APPS = [
+  "cold-email",
+  "complaint-reply",
+  "exhibition-invite",
+  "follow-up",
+  "inquiry-reply",
+  "multilang-notice",
+  "negotiation-reply",
+  "order-confirm-reply",
+  "product-intro-letter",
+  "reactivate-email",
+  "whatsapp-reply",
+  "term-localize",
+  "trade-translate",
+];
+const LETTER_CLUSTER_TABLE = [
+  ["dialogue-branch-script", 3, 1, 3],
+  ["contract-assembly", 2, 4, 5],
+  ["ledger-register", 2, 6, 7],
+  ["voiceover-script", 1, 8, 8],
+  ["search-query-builder", 1, 9, 9],
+];
+const RESEARCH_CLUSTER_APPS = [
+  "company-research",
+  "competitor-report",
+  "customer-profile",
+  "market-entry",
+  "pricing-strategy",
+  "selling-points",
+];
+const RESEARCH_CLUSTER_TABLE = [
+  ["chart-template", 2, 1, 2],
+  ["ledger-register", 2, 3, 4],
+  ["search-query-builder", 2, 5, 6],
+  ["relationship-graph", 2, 7, 8],
+  ["scheme-board", 1, 9, 9],
+];
+
+test("APPS 与 L4 §3 的两张簇表逐格相等,簇表已真展开到每个 app", async () => {
+  const { SITE_MATERIAL_PLAN } = await loadPlanModule();
+  const byAppId = new Map(SITE_MATERIAL_PLAN.apps.map((app) => [app.appId, app]));
+
+  assert.deepEqual(
+    [...byAppId.keys()].sort(),
+    [...LETTER_CLUSTER_APPS, ...RESEARCH_CLUSTER_APPS].sort(),
+    "plan 的 app 集合与 L4 §3 两簇展开后的并集不等",
+  );
+  // L4 §3.x 覆盖校验:各簇 app 去重合计 19,簇间不得交叠。
+  assert.equal(LETTER_CLUSTER_APPS.length, 13);
+  assert.equal(RESEARCH_CLUSTER_APPS.length, 6);
+  assert.equal(byAppId.size, 19);
+  for (const appId of RESEARCH_CLUSTER_APPS) {
+    assert.ok(!LETTER_CLUSTER_APPS.includes(appId), `${appId} 同时出现在两簇里`);
+  }
+
+  for (const [apps, table] of [
+    [LETTER_CLUSTER_APPS, LETTER_CLUSTER_TABLE],
+    [RESEARCH_CLUSTER_APPS, RESEARCH_CLUSTER_TABLE],
+  ]) {
+    for (const appId of apps) {
+      const app = byAppId.get(appId);
+      assert.ok(app, `L4 §3 点名的 ${appId} 不在 plan 里`);
+      assert.deepEqual(
+        app.slots.map((slot) => [
+          slot.family,
+          slot.count,
+          slot.positions[0],
+          slot.positions[1],
+        ]),
+        table,
+        `${appId} 的族/份数/货架位次与 L4 §3 表不符`,
+      );
+    }
+  }
+
+  // L4 §6 场景 1:每个 app 至少映射到 5 个不同族;§3.x:全站引用族数为 8。
+  const families = new Set();
+  for (const app of SITE_MATERIAL_PLAN.apps) {
+    const perApp = new Set(app.slots.map((slot) => slot.family));
+    assert.ok(perApp.size >= 5, `${app.appId} 只映射到 ${perApp.size} 个族`);
+    for (const family of perApp) families.add(family);
+  }
+  assert.equal(families.size, 8, `本站引用族数应为 8,实为 ${families.size}`);
+
+  // L4 §3.x 目标素材数 19 × 9 = 171。
+  const total = SITE_MATERIAL_PLAN.apps.reduce(
+    (sum, app) => sum + app.slots.reduce((n, slot) => n + slot.count, 0),
+    0,
+  );
+  assert.equal(total, 171);
+});
+
 test("映射面不含任何素材实体:无 artifactId 字段、无 URL", async () => {
   const source = await readFile(resolve("lib/site-material-plan.ts"), "utf8");
   const offenders = [...source.matchAll(/artifactId\s*:|https?:\/\/\S+/g)].map(
