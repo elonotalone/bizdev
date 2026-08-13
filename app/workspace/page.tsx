@@ -2,8 +2,9 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import ConsoleClient from "@/components/console/ConsoleClient";
 
+import { SITE_HOST } from "@/lib/site-origin";
 export const metadata: Metadata = {
-  title: "外贸工作台 — LeoBizDev · 智能回复 · 公司调研 · 竞品分析 · 开发信 · 外贸翻译 | bizdev.oceanleo.com",
+  title: `外贸工作台 — LeoBizDev · 智能回复 · 公司调研 · 竞品分析 · 开发信 · 外贸翻译 | ${SITE_HOST}`,
   description:
     "工作台：智能回复 / 公司调研 / 竞品分析 / 开发信 / 外贸翻译，顶部功能按键一键切换，每个功能区都有专属 agent。",
 };

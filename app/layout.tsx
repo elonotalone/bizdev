@@ -12,9 +12,10 @@ import { getThemeClass } from "@oceanleo/ui/theme/server";
 // 境内合规页脚：变量未设时渲染 null，.com 产物逐字节不变。
 import { IcpBeianFooter } from "@/app/_components/icp-beian-footer";
 
+import { SITE_HOST } from "@/lib/site-origin";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "LeoBizDev — 外贸 · 出海 AI 工作台 | bizdev.oceanleo.com",
+  title: `LeoBizDev — 外贸 · 出海 AI 工作台 | ${SITE_HOST}`,
   description:
     "外贸/出海 AI 工作台：智能回复客户邮件、公司调研、竞品分析、外贸开发信撰写、外贸翻译与本地化，全部走 OceanLeo 统一网关，按量计费。",
 };
