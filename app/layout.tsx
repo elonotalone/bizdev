@@ -1,13 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "@oceanleo/ui/theme/ui.css";
-import { LeoAssistant, EmbedChrome, IcpBeianFooter } from "@oceanleo/ui/shell";
+import { LeoAssistant, EmbedChrome } from "@oceanleo/ui/shell";
 import { SiteShell } from "@/components/SiteShell";
 import { I18nProvider } from "@oceanleo/ui/i18n";
 import { getLocale, getMessages, normalizeLocale, htmlLang, localeDir } from "@oceanleo/ui/i18n/server";
 import { ThemeScript, ThemeProvider } from "@oceanleo/ui/theme";
 import { getThemeClass } from "@oceanleo/ui/theme/server";
 
+
+// 境内合规页脚：变量未设时渲染 null，.com 产物逐字节不变。
+import { IcpBeianFooter } from "@/app/_components/icp-beian-footer";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {

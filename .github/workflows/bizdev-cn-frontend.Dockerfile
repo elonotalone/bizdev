@@ -59,6 +59,17 @@ ENV NEXT_PUBLIC_OCEANLEO_GATEWAY_URL=${NEXT_PUBLIC_OCEANLEO_GATEWAY_URL}
 ARG NEXT_PUBLIC_OCEANLEO_SITE_ORIGIN=https://bizdev.oceanleo.cn
 ENV NEXT_PUBLIC_OCEANLEO_SITE_ORIGIN=${NEXT_PUBLIC_OCEANLEO_SITE_ORIGIN}
 
+# 同一件事的另外两个变量名。有几个站仓比共享约定更早写好，读的是自己那套名字：
+#   · website 读 NEXT_PUBLIC_SITE_URL（`|| "https://website.oceanleo.com"`）
+#   · asset / excel / video 读 NEXT_PUBLIC_GATEWAY_URL
+# 名字对不上的后果不是报错，是**静默走兜底分支**——境内站去连境外网关、
+# 把自己的规范地址宣称成 .com。多传一个同义变量比改四个仓的源码便宜且更安全：
+# `.com` 的 Vercel 构建不设它们，照旧走 `||` 兜底，产物逐字节不变。
+ARG NEXT_PUBLIC_SITE_URL=https://bizdev.oceanleo.cn
+ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+ARG NEXT_PUBLIC_GATEWAY_URL=https://api.oceanleo.cn
+ENV NEXT_PUBLIC_GATEWAY_URL=${NEXT_PUBLIC_GATEWAY_URL}
+
 # 素材直链 origin。家族表里 cn 的缺省是 asset.oceanleo.cn，但那个域名今天不解析
 # （素材桶在另一个阿里云账号下，本账号只有匿名只读，绑不了自定义域），
 # 所以这里覆盖成桶的实际公网地址 —— 它物理在广州，不构成数据出境。
