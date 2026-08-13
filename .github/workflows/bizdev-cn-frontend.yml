@@ -1,0 +1,168 @@
+# bizdev 子站的境内（bizdev.oceanleo.cn）镜像构建，以及在显式要求时通知广州切换。
+#
+# 由 oceandino `scripts/oceanleo-cn-scaffold.py` 生成，**不要手改**。
+#
+# 形状抄自门户仓 `oceanleo-cn-frontend.yml`，两条理由原样成立：
+#   1. push 到 main 只**构建**。部署是另一次显式的 workflow_dispatch（deploy: true）。
+#      一个普通提交永远不能替换 bizdev.oceanleo.cn 正在服务的东西。
+#   2. 推 ghcr 用这次 run 自带的 GITHUB_TOKEN（packages: write），
+#      不必把带 write:packages 的个人令牌存成仓库 secret。
+#
+# 站 key 是 `bizdev`，它同时决定镜像名 `bizdev-frontend-cn` 和广州的
+# compose 文件 `cn/sites/bizdev.yml` —— deploy.sh 从这一个词推导两者，
+# 所以不可能只改一边。
+#
+# tag 只打 `:<sha7>`。`:current` / `:previous` 是广州机上的事实，由
+# cn/deploy/deploy.sh 在那台机器上产生，不是 registry 的属性。
+
+name: bizdev CN frontend image
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "components/**"
+      - "lib/**"
+      - "i18n/**"
+      - "messages/**"
+      - "public/**"
+      - "next.config.ts"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/bizdev-cn-frontend.yml"
+      - ".github/workflows/bizdev-cn-frontend.Dockerfile"
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Also switch the Guangzhou host to this image"
+        type: boolean
+        default: false
+      ui_ref:
+        description: "oceanleo-ui ref to build the shared package from"
+        type: string
+        default: main
+
+env:
+  SITE: bizdev
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/bizdev-frontend-cn
+  GATEWAY_URL: https://api.oceanleo.cn
+  SITE_ORIGIN: https://bizdev.oceanleo.cn
+  ICP_BEIAN: 粤ICP备2026080430号-1
+  # 这个镜像里的 @oceanleo/ui 从哪份源码构建。
+  #
+  # 它**不用** package.json 里的 github: pin —— 那条 pin 属于 Vercel 上的 .com
+  # 站，改它就是向 .com 发版。境内改走 checkout 到 .oceanleo-ui-src/ 的源码。
+  # 缺省 main：境内家族表（哪些子站在 .cn 存在）活在共享包里，境内镜像必须跟着
+  # 它走；钉在某个旧 tag 上会让这个站以为境内一个子站都没有。
+  UI_REF: ${{ inputs.ui_ref || 'main' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      sha7: ${{ steps.meta.outputs.sha7 }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Checkout the shared UI sources into the build context
+        uses: actions/checkout@v4
+        with:
+          repository: elonotalone/oceanleo-ui
+          ref: ${{ env.UI_REF }}
+          path: ./.oceanleo-ui-src
+          fetch-depth: 1
+
+      - name: Record which UI commit went in
+        id: ui
+        working-directory: .
+        run: |
+          set -euo pipefail
+          commit=$(git -C .oceanleo-ui-src rev-parse HEAD)
+          name=$(node -p "require('./.oceanleo-ui-src/package.json').name")
+          if [[ "${name}" != "@oceanleo/ui" ]]; then
+            echo "::error::.oceanleo-ui-src is ${name}, not @oceanleo/ui"
+            exit 1
+          fi
+          echo "commit=${commit}" >> "$GITHUB_OUTPUT"
+
+      - name: Compute short SHA
+        id: meta
+        run: echo "sha7=$(git rev-parse --short=7 HEAD)" >> "$GITHUB_OUTPUT"
+
+      # 没有它，build-push-action 用的是默认 docker driver，而那个 driver
+      # 不支持 cache-to —— 表现是构建 20 秒就红在
+      # "Cache export is not supported for the docker driver"，
+      # 与 Dockerfile 无关，很容易被误读成镜像本身有问题。
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: .github/workflows/bizdev-cn-frontend.Dockerfile
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.sha7 }}
+          build-args: |
+            NEXT_PUBLIC_OCEANLEO_GATEWAY_URL=${{ env.GATEWAY_URL }}
+            NEXT_PUBLIC_OCEANLEO_SITE_ORIGIN=${{ env.SITE_ORIGIN }}
+            NEXT_PUBLIC_OCEANLEO_ICP_BEIAN=${{ env.ICP_BEIAN }}
+            OCEANLEO_UI_COMMIT=${{ steps.ui.outputs.commit }}
+            OCEANLEO_UI_ORIGIN=github:elonotalone/oceanleo-ui@${{ env.UI_REF }}
+          cache-from: type=gha,scope=bizdev-cn
+          cache-to: type=gha,mode=max,scope=bizdev-cn
+
+      - name: Smoke test the image
+        run: |
+          set -euo pipefail
+          docker run -d --name smoke -e HOSTNAME=0.0.0.0 -e PORT=3105 \
+            -p 3105:3105 ${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.sha7 }}
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /tmp/smoke.html -w '%{http_code}' \
+              "http://127.0.0.1:3105/" || true)
+            [ "$code" = "200" ] && break
+            sleep 3
+          done
+          docker logs smoke | tail -40
+          test "$code" = "200" || (echo "::error::smoke got HTTP $code"; exit 1)
+          # 一个境内镜像的页面里出现 .oceanleo.com 主机 = 家族开关没生效，
+          # 也就是把境内用户往境外送。宁可在这里红，也不要在广州上线后才发现。
+          if grep -qE '(https?://)[a-z0-9-]+\.oceanleo\.com' /tmp/smoke.html; then
+            echo "::error::mainland build still emits .oceanleo.com hosts"
+            grep -oE '(https?://)[a-z0-9-]+\.oceanleo\.com' /tmp/smoke.html | sort -u
+            exit 1
+          fi
+          grep -q "粤ICP备2026080430号-1" /tmp/smoke.html \
+            || (echo "::error::ICP footer missing"; exit 1)
+          docker rm -f smoke
+
+  deploy:
+    needs: build
+    if: inputs.deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tell Guangzhou to switch
+        run: |
+          set -euo pipefail
+          body="{\"site\":\"bizdev\",\"sha\":\"${{ needs.build.outputs.sha7 }}\"}"
+          sig=$(printf '%s' "$body" | openssl dgst -sha256 \
+            -hmac "${{ secrets.OCEANDINO_CN_WEBHOOK_SECRET }}" -r | cut -d' ' -f1)
+          curl -sS -X POST "${{ secrets.OCEANDINO_CN_WEBHOOK_URL }}" \
+            -H 'content-type: application/json' \
+            -H "x-signature: sha256=$sig" \
+            --data "$body" -w '\n%{http_code}\n'

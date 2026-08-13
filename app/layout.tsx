@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "@oceanleo/ui/theme/ui.css";
-import { LeoAssistant, EmbedChrome } from "@oceanleo/ui/shell";
+import { LeoAssistant, EmbedChrome, IcpBeianFooter } from "@oceanleo/ui/shell";
 import { SiteShell } from "@/components/SiteShell";
 import { I18nProvider } from "@oceanleo/ui/i18n";
 import { getLocale, getMessages, normalizeLocale, htmlLang, localeDir } from "@oceanleo/ui/i18n/server";
@@ -43,6 +43,7 @@ export default async function RootLayout({
         <LeoAssistant siteId="bizdev" docType="doc" />
                 </I18nProvider>
         </ThemeProvider>
+        <IcpBeianFooter />
       </body>
     </html>
   );
