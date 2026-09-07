@@ -10,6 +10,8 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import ts from "typescript";
 
+import { createUiTreeCompiler } from "./compile-ui-tree.mjs";
+
 const require = createRequire(import.meta.url);
 const reactUrl = pathToFileURL(require.resolve("react")).href;
 const jsxRuntimeUrl = pathToFileURL(require.resolve("react/jsx-runtime")).href;
@@ -135,15 +137,13 @@ test("bizdev delegates library surfaces without local material injection", async
   assert.equal(existsSync(resolve("lib/materials.ts")), false);
 });
 
-test("shared contract exposes all 12 More classes and owner-scoped My Library", async () => {
+test("shared contract exposes all 13 More classes and owner-scoped My Library", async () => {
   const root = resolve("node_modules/@oceanleo/ui/src/shell");
-  const [resultCanvas, controller, myLibrary, advancedFeatures] =
-    await Promise.all([
-      readFile(resolve(root, "ResultCanvas.tsx"), "utf8"),
-      readFile(resolve(root, "material-library-controller.ts"), "utf8"),
-      readFile(resolve(root, "MyLibrary.tsx"), "utf8"),
-      readFile(resolve(root, "advanced-features.ts"), "utf8"),
-    ]);
+  const [resultCanvas, controller, myLibrary] = await Promise.all([
+    readFile(resolve(root, "ResultCanvas.tsx"), "utf8"),
+    readFile(resolve(root, "material-library-controller.ts"), "utf8"),
+    readFile(resolve(root, "MyLibrary.tsx"), "utf8"),
+  ]);
   const materialsMount =
     resultCanvas.match(/materials:\s*\([\s\S]*?<MaterialLibrary[\s\S]*?\/>/)?.[0] ||
     "";
@@ -153,10 +153,21 @@ test("shared contract exposes all 12 More classes and owner-scoped My Library", 
   assert.doesNotMatch(materialsMount, /curatedType=|itemFilter=/);
   assert.match(mineMount, /<MyLibrary/);
   assert.doesNotMatch(mineMount, /curatedType=|itemFilter=/);
+  // @oceanleo/ui v0.195（2ce8a49）起「更多」货架改为按站作用域 fail-closed 检索
+  // （materialScopeViolation → searchScopedLibrary 带 originSiteKey），v0.203（7fb8325）
+  // 删掉跨站 editable-shelf 入口：controller 不再引用 listEditableShelfArtifacts；
+  // exact-context Primary 仍走 listPrimaryArtifacts。
   assert.match(
     controller,
-    /if \(!input\.taxonomy && !input\.query\.trim\(\)\)[\s\S]*?listEditableShelfArtifacts/,
+    /const violation = materialScopeViolation\(\{[\s\S]*?if \(violation\) return unenforceableScopeResult\(violation\)/,
   );
+  assert.match(
+    controller,
+    /if \(input\.level === "primary"\)[\s\S]*?listPrimaryArtifacts\(input\.context/,
+  );
+  assert.match(controller, /searchScopedLibrary\(input, types\)/);
+  assert.match(controller, /originSiteKey: params\.originSiteKey/);
+  assert.doesNotMatch(controller, /listEditableShelfArtifacts/);
   assert.match(myLibrary, /listMyArtifacts/);
   assert.match(
     myLibrary,
@@ -167,13 +178,23 @@ test("shared contract exposes all 12 More classes and owner-scoped My Library", 
     /item\.artifact\.owner\.visibility !== "public"/,
   );
   assert.doesNotMatch(myLibrary, /searchArtifactLibrary|MATERIAL_LIBRARY_MORE_ROLE/);
-  const featureBlock =
-    advancedFeatures.match(
-      /export const ADVANCED_FEATURES[\s\S]*?\] as const;/,
-    )?.[0] || "";
-  const featureIds = [
-    ...featureBlock.matchAll(/\bid:\s*"([^"]+)"/g),
-  ].map((match) => match[1]);
-  assert.equal(featureIds.length, 12);
-  assert.equal(new Set(featureIds).size, 12);
+  // @oceanleo/ui v0.192.2（1130065）起 ADVANCED_FEATURES 不再手写字面量数组，而是由
+  // artifact-contract 的 ADVANCED_CAPABILITY_MATRIX 派生（源码里已没有 `] as const` 块可抓）；
+  // v0.203（7fb8325）加入 game_editing 后是 13 类。按编译后的真实导出断言。
+  const ui = createUiTreeCompiler({
+    srcRoot: resolve("node_modules/@oceanleo/ui/src"),
+  });
+  const [{ ADVANCED_FEATURES }, { ADVANCED_CAPABILITY_MATRIX }] =
+    await Promise.all([
+      import(await ui.compileSrc("shell/advanced-features.ts")),
+      import(await ui.compileSrc("shell/artifact-contract.ts")),
+    ]);
+  const featureIds = ADVANCED_FEATURES.map((feature) => feature.id);
+  assert.deepEqual(
+    featureIds,
+    ADVANCED_CAPABILITY_MATRIX.map((entry) => entry.featureId),
+  );
+  assert.equal(featureIds.length, 13);
+  assert.equal(new Set(featureIds).size, 13);
+  assert.ok(featureIds.includes("game_editing"));
 });

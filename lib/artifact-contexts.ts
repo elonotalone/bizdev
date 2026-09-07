@@ -5,7 +5,7 @@ export const CONTEXT_SCHEMA = "oceanleo.artifact-context-rollout/v1" as const;
 export const CONTEXT_MANIFEST_DIGEST =
   "735f0795aea55632cf302399492caa82f7150991474c892746bef228f4565a8e";
 export const CATALOG_SOURCE_SHA256 =
-  "0356cf88aa17a33b1826dd201cd026dba078d7bd464b0dc7f7d34c28a8e80544";
+  "563095029e4053fd8c883915d0c3aed735c2ecd81a965c808469092945acfb44";
 
 export interface ArtifactContextDefinition {
   contextId: string;
