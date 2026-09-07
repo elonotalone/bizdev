@@ -49,6 +49,8 @@ env:
   GATEWAY_URL: https://api.oceanleo.cn
   SITE_ORIGIN: https://bizdev.oceanleo.cn
   ICP_BEIAN: 粤ICP备2026080430号-1
+  POLICE_BEIAN: 粤公网安备44030002016192号
+  POLICE_BEIAN_CODE: "44030002016192"
   # 这个镜像里的 @oceanleo/ui 从哪份源码构建。
   #
   # 它**不用** package.json 里的 github: pin —— 那条 pin 属于 Vercel 上的 .com
@@ -124,6 +126,8 @@ jobs:
             NEXT_PUBLIC_SITE_URL=${{ env.SITE_ORIGIN }}
             NEXT_PUBLIC_GATEWAY_URL=${{ env.GATEWAY_URL }}
             NEXT_PUBLIC_OCEANLEO_ICP_BEIAN=${{ env.ICP_BEIAN }}
+            NEXT_PUBLIC_OCEANLEO_POLICE_BEIAN=${{ env.POLICE_BEIAN }}
+            NEXT_PUBLIC_OCEANLEO_POLICE_BEIAN_CODE=${{ env.POLICE_BEIAN_CODE }}
             OCEANLEO_UI_COMMIT=${{ steps.ui.outputs.commit }}
             OCEANLEO_UI_ORIGIN=github:elonotalone/oceanleo-ui@${{ env.UI_REF }}
           cache-from: type=gha,scope=bizdev-cn
@@ -151,6 +155,8 @@ jobs:
           fi
           grep -q "粤ICP备2026080430号-1" /tmp/smoke.html \
             || (echo "::error::ICP footer missing"; exit 1)
+          grep -q "粤公网安备44030002016192号" /tmp/smoke.html \
+            || (echo "::error::police beian footer missing"; exit 1)
           docker rm -f smoke
 
   deploy:

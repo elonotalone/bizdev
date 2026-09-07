@@ -17,15 +17,16 @@
  * 全站丢掉 RSC 预取。而且这样 `.com` 的产物逐字节不变 —— 变量没设 → 返回
  * null → 海外页面上连一个空 div 都不会多。变量只在境内镜像的 Dockerfile 里设。
  *
- * 公安备案号单独一个变量：它比 ICP 晚办（网站开通后 30 日内另办），
- * 没下来就留空，只显示 ICP 那一行。
+ * 公安备案号 2026-08-27 已办下来。缺省与 ICP 一样写死真实号，避免镜像漏传
+ * ARG 时页脚只剩工信部那一行。.com 不设 ICP，整段仍是 null。
  */
 
 const ICP = (process.env.NEXT_PUBLIC_OCEANLEO_ICP_BEIAN || "").trim();
-// 形如 "粤公网安备 44030702001234号"，配套的记录 id 用于拼平台查询链接。
-const POLICE = (process.env.NEXT_PUBLIC_OCEANLEO_POLICE_BEIAN || "").trim();
+const POLICE = (
+  process.env.NEXT_PUBLIC_OCEANLEO_POLICE_BEIAN || "粤公网安备44030002016192号"
+).trim();
 const POLICE_CODE = (
-  process.env.NEXT_PUBLIC_OCEANLEO_POLICE_BEIAN_CODE || ""
+  process.env.NEXT_PUBLIC_OCEANLEO_POLICE_BEIAN_CODE || "44030002016192"
 ).trim();
 
 export function IcpBeianFooter() {

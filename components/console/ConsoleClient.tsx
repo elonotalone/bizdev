@@ -66,9 +66,10 @@ export default function ConsoleClient() {
 
   const onChange = useCallback(
     (id: string) => {
-      if (embed) return;
+      if (!(embed || solo)) return;
       const sp = new URLSearchParams();
       if (id) sp.set("fn", id);
+      if (embed) sp.set("embed", "1");
       if (solo) sp.set("solo", "1");
       const qs = sp.toString();
       router.replace(qs ? `/workspace?${qs}` : "/workspace", { scroll: false });
