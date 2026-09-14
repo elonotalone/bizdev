@@ -22,6 +22,7 @@ async function authHeader(): Promise<Record<string, string>> {
 export async function gatewayPost<T>(path: string, body: unknown): Promise<T> {
   const headers = await authHeader();
   const res = await fetch(`${GATEWAY_BASE}${path}`, {
+    credentials: "include",
     method: "POST",
     headers: { ...headers, "Content-Type": "application/json" },
     body: JSON.stringify(withOperatorRemarkRequest(body)),
@@ -35,7 +36,7 @@ export async function gatewayPost<T>(path: string, body: unknown): Promise<T> {
 
 export async function gatewayGet<T>(path: string): Promise<T> {
   const headers = await authHeader();
-  const res = await fetch(`${GATEWAY_BASE}${path}`, { headers, cache: "no-store" });
+  const res = await fetch(`${GATEWAY_BASE}${path}`, { headers, cache: "no-store", credentials: "include" });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     throw new Error((data as { detail?: string })?.detail || `HTTP ${res.status}`);

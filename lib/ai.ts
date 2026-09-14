@@ -30,6 +30,7 @@ export async function aiChat(input: {
   let res: Response;
   try {
     res = await fetch(`${GATEWAY_BASE}/v1/chat`, {
+      credentials: "include",
       method: "POST",
       headers: {
         "Content-Type": "application/json",
