@@ -1,8 +1,10 @@
-"use client";
+// LeoChat 只有小窗，没有整页：这个地址一律跳到 LeoBay（`?bay=` 详情参数原样带上）。
+import { redirect } from "next/navigation";
 
-import { LeoChatPage } from "@oceanleo/ui/shell";
-import { SITE_ACCENT } from "@/components/SiteShell";
+type Search = Record<string, string | string[] | undefined>;
 
-export default function LeoChatPageRoute() {
-  return <LeoChatPage siteKey="bizdev" accent={SITE_ACCENT} />;
+export default async function LeoChatRedirect({ searchParams }: { searchParams: Promise<Search> }) {
+  const sp = await searchParams;
+  const bay = Array.isArray(sp?.bay) ? sp.bay[0] : sp?.bay;
+  redirect(typeof bay === "string" && bay ? `/bay?bay=${encodeURIComponent(bay)}` : "/bay");
 }
